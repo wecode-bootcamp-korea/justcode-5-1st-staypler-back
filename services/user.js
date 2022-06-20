@@ -1,5 +1,10 @@
-function signup() {}
+const userRepository = require('../models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-function login() {}
+function signup(user) {}
+
+function login(email, password) {}
 
 module.exports = { signup, login };
