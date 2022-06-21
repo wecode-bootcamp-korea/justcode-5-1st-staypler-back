@@ -1,14 +1,10 @@
 import express from 'express';
-import {
-  promotionController,
-  recommendController,
-  bannerController,
-} from '../controllers/main.js';
+import * as mainController from '../controllers/main.js';
 
 const router = express.Router();
 
-router.get('/promotion', promotionController);
-router.get('/recommend', recommendController);
-router.get('/banner', bannerController);
+router.get('/promotion', mainController.promotionController);
+router.get('/recommend', mainController.recommendController);
+router.get('/banner', mainController.bannerController);
 
-module.exports = router;
+export default router;

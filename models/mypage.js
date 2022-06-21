@@ -1,19 +1,11 @@
 import prismaClient from './prisma-client.js';
 
-async function readMyPage(id) {}
+export async function readMyPage(id) {}
 
-async function updateInfo(id, user) {}
+export async function updateInfo(id, user) {}
 
-async function updatePassword(id, password) {}
+export async function updatePassword(id, password) {}
 
-async function readWishRooms(id) {}
+export async function readWishRooms(id) {}
 
-async function readBookingRooms(id) {}
-
-module.exports = {
-  readMyPage,
-  updateInfo,
-  updatePassword,
-  readWishRooms,
-  readBookingRooms,
-};
+export async function readBookingRooms(id) {}

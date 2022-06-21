@@ -1,20 +1,13 @@
 import express from 'express';
-import {
-  roomsController,
-  roomsDetailController,
-  roomsLikeController,
-  roomsRoomController,
-  roomsBookingInfoController,
-  roomsPaymentController,
-} from '../controllers/room.js';
+import * as roomController from '../controllers/room.js';
 
 const router = express.Router();
 
-router.get('/rooms', roomsController);
-router.get('/rooms/:id', roomsDetailController);
-router.post('/rooms/:id/like', roomsLikeController);
-router.get('/rooms/:id/room', roomsRoomController);
-router.get('/rooms/:id/bookings', roomsBookingInfoController);
-router.post('/rooms/payment', roomsPaymentController);
+router.get('/rooms', roomController.roomsController);
+router.get('/rooms/:id', roomController.roomsDetailController);
+router.post('/rooms/:id/like', roomController.roomsLikeController);
+router.get('/rooms/:id/room', roomController.roomsRoomController);
+router.get('/rooms/:id/bookings', roomController.roomsBookingInfoController);
+router.post('/rooms/payment', roomController.roomsPaymentController);
 
-module.exports = router;
+export default router;

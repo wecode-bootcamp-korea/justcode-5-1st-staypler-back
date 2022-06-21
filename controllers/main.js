@@ -1,9 +1,7 @@
-import mainService from '../services/main.js';
+import * as mainService from '../services/main.js';
 
-function promotionController(req, res) {}
+export function promotionController(req, res) {}
 
-function recommendController(req, res) {}
+export function recommendController(req, res) {}
 
-function bannerController(req, res) {}
-
-module.exports = { promotionController, recommendController, bannerController };
+export function bannerController(req, res) {}

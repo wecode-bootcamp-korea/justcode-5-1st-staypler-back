@@ -1,7 +1,8 @@
 {
   "parserOptions": {
     "ecmaVersion": 2017,
-    "sourceType": "module"
+    "sourceType": "module",
+    "allowImportExportEverywhere": true
   },
   "extends": ["plugin:prettier/recommended"],
   "rules": {

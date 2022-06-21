@@ -1,22 +1,13 @@
 import prismaClient from './prisma-client.js';
 
-async function readAll() {}
+export async function readAll() {}
 
-async function readById(id) {}
+export async function readById(id) {}
 
-async function createLike(id) {}
+export async function createLike(id) {}
 
-async function readRoomById(id) {}
+export async function readRoomById(id) {}
 
-async function readBookingInfo(id, userId) {}
+export async function readBookingInfo(id, userId) {}
 
-async function createBooking(bookingInfo) {}
-
-module.exports = {
-  readAll,
-  readById,
-  createLike,
-  readRoomById,
-  readBookingInfo,
-  createBooking,
-};
+export async function createBooking(bookingInfo) {}

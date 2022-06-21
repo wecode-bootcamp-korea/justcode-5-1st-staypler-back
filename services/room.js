@@ -1,22 +1,13 @@
-import roomRepositroy from '../models/room.js';
+import * as roomRepositroy from '../models/room.js';
 
-function getRooms() {}
+export function getRooms() {}
 
-function getRoomsById(id) {}
+export function getRoomsById(id) {}
 
-function likeRooms(id) {}
+export function likeRooms(id) {}
 
-function getRoomOfRooms(id) {}
+export function getRoomOfRooms(id) {}
 
-function getBookingInfoOfRooms(id) {}
+export function getBookingInfoOfRooms(id) {}
 
-function paymentOfBooking(bookingInfo) {}
-
-module.exports = {
-  getRooms,
-  getRoomsById,
-  likeRooms,
-  getRoomOfRooms,
-  getBookingInfoOfRooms,
-  paymentOfBooking,
-};
+export function paymentOfBooking(bookingInfo) {}
