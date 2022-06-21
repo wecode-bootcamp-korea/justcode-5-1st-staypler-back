@@ -1,18 +1,12 @@
 import express from 'express';
-import {
-  myPageController,
-  myPageUpdateController,
-  myPagePasswordUpdateController,
-  myPageLikeController,
-  myPageBookingController,
-} from '../controllers/mypage.js';
+import * as myPageController from '../controllers/mypage.js';
 
 const router = express.Router();
 
-router.get('/mypage', myPageController);
-router.put('/mypage', myPageUpdateController);
-router.put('/mypage/password', myPagePasswordUpdateController);
-router.get('/mypage/like', myPageLikeController);
-router.get('/mypage/bookings', myPageBookingController);
+router.get('/mypage', myPageController.myPageController);
+router.put('/mypage', myPageController.myPageUpdateController);
+router.put('/mypage/password', myPageController.myPagePasswordUpdateController);
+router.get('/mypage/like', myPageController.myPageLikeController);
+router.get('/mypage/bookings', myPageController.myPageBookingController);
 
-module.exports = router;
+export default router;

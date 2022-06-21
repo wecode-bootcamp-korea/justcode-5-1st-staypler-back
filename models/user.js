@@ -1,7 +1,5 @@
 import prismaClient from './prisma-client.js';
 
-async function createUser(user) {}
+export async function createUser(user) {}
 
-async function readUserByEmail(email) {}
-
-module.exports = { createUser, readUserByEmail };
+export async function readUserByEmail(email) {}

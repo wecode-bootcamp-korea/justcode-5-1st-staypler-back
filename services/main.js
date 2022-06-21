@@ -1,9 +1,7 @@
-import mainRepository from '../models/main.js';
+import * as mainRepository from '../models/main.js';
 
-function getPromotionRooms() {}
+export function getPromotionRooms() {}
 
-function getRecommendRooms() {}
+export function getRecommendRooms() {}
 
-function getBannerRooms() {}
-
-module.exports = { getPromotionRooms, getRecommendRooms, getBannerRooms };
+export function getBannerRooms() {}

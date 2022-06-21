@@ -1,11 +1,11 @@
-import myPageRepository from '../models/mypage.js';
+import * as myPageRepository from '../models/mypage.js';
 
-function getMyPage(id) {}
+export function getMyPage(id) {}
 
-function updateMyPage(id, user) {}
+export function updateMyPage(id, user) {}
 
-function updatePassword(id, password) {}
+export function updatePassword(id, password) {}
 
-function getWishRooms(id) {}
+export function getWishRooms(id) {}
 
-function getBookingRooms(id) {}
+export function getBookingRooms(id) {}
