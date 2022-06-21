@@ -1,9 +1,9 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   promotionController,
   recommendController,
   bannerController,
-} = require('../controllers/main');
+} from '../controllers/main.js';
 
 const router = express.Router();
 

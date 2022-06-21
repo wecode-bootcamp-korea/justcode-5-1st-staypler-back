@@ -1,4 +1,4 @@
-const prismaClient = require('./prisma-client');
+import prismaClient from './prisma-client.js';
 
 async function createUser(user) {}
 

@@ -1,4 +1,4 @@
-const myPageRepository = require('../models/mypage');
+import myPageRepository from '../models/mypage.js';
 
 function getMyPage(id) {}
 

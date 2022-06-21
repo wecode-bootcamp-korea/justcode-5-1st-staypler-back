@@ -1,4 +1,4 @@
-const mainService = require('../services/main');
+import mainService from '../services/main.js';
 
 function promotionController(req, res) {}
 

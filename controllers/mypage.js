@@ -1,4 +1,4 @@
-const myPageService = require('../services/mypage');
+import myPageService from '../services/mypage.js';
 
 function myPageController(req, res) {}
 

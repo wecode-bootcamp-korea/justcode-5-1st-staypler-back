@@ -1,4 +1,4 @@
-const roomService = require('../services/room');
+import roomService from '../services/room.js';
 
 function roomsController(req, res) {}
 

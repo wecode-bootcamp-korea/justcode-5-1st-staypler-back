@@ -1,4 +1,4 @@
-const roomRepositroy = require('../models/room');
+import roomRepositroy from '../models/room.js';
 
 function getRooms() {}
 

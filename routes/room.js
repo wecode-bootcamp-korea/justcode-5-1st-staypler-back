@@ -1,12 +1,12 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   roomsController,
   roomsDetailController,
   roomsLikeController,
   roomsRoomController,
   roomsBookingInfoController,
   roomsPaymentController,
-} = require('../controllers/room');
+} from '../controllers/room.js';
 
 const router = express.Router();
 

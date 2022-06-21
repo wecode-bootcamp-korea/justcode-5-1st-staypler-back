@@ -1,9 +1,8 @@
-const express = require('express');
-
-const userRouter = require('./user');
-const mainRouter = require('./main');
-const roomRouter = require('./room');
-const myPageRouter = require('./mypage');
+import express from 'express';
+import userRouter from './user.js';
+import mainRouter from './main.js';
+import roomRouter from './room.js';
+import myPageRouter from './mypage.js';
 
 const router = express.Router();
 

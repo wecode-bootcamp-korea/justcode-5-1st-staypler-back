@@ -1,4 +1,4 @@
-const userService = require('../services/user');
+import userService from '../services/user.js';
 
 function signupController(req, res) {
   res.status(500).json({ message: 'not implemented' }); // 구현이 되면 삭제합니다.

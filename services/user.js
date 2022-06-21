@@ -1,7 +1,9 @@
-const userRepository = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import userRepository from '../models/user.js';
+
+dotenv.config();
 
 function signup(user) {}
 

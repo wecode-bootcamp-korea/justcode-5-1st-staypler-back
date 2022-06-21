@@ -1,4 +1,4 @@
-const mainRepository = require('../models/main');
+import mainRepository from '../models/main.js';
 
 function getPromotionRooms() {}
 

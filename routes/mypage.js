@@ -1,11 +1,11 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   myPageController,
   myPageUpdateController,
   myPagePasswordUpdateController,
   myPageLikeController,
   myPageBookingController,
-} = require('../controllers/mypage');
+} from '../controllers/mypage.js';
 
 const router = express.Router();
 
