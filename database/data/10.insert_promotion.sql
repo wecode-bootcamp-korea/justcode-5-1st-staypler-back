@@ -1,0 +1,3 @@
+INSERT INTO promotion(rooms_id, image, start_date, end_date, title, sub_title) VALUES(1,'1_promotion.png','2022-06-21','2022-06-28','프로모션 제목1','프로모션 서브 제목1');
+INSERT INTO promotion(rooms_id, image, start_date, end_date, title, sub_title) VALUES(3,'3_promotion.png','2022-06-17','2022-06-24','프로모션 제목3','프로모션 서브 제목3');
+INSERT INTO promotion(rooms_id, image, start_date, end_date, title, sub_title) VALUES(5,'4_promotion.png','2022-06-19','2022-06-26','프로모션 제목5','프로모션 서브 제목5');

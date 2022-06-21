@@ -34,15 +34,6 @@ model promotion {
   @@index([rooms_id], map: "rooms_id")
 }
 
-model recommend {
-  id       Int     @id @default(autoincrement())
-  rooms_id Int
-  image    String? @db.VarChar(2000)
-  rooms    rooms   @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "recommend_ibfk_1")
-
-  @@index([rooms_id], map: "rooms_id")
-}
-
 model reservation {
   id           Int       @id @default(autoincrement())
   room_type_id Int
@@ -68,8 +59,8 @@ model room_type {
   min_limit       Int
   max_limit       Int
   price           Int
-  check_in_time   DateTime          @db.Timestamp(0)
-  check_out_time  DateTime          @db.Timestamp(0)
+  check_in_time   String            @db.VarChar(100)
+  check_out_time  String            @db.VarChar(100)
   reservation     reservation[]
   room_type_image room_type_image[]
 }
@@ -84,20 +75,20 @@ model room_type_image {
 }
 
 model rooms {
-  id            Int             @id @default(autoincrement())
-  title         String          @unique(map: "title") @db.VarChar(300)
-  concept       String?         @db.VarChar(300)
-  type          String          @db.VarChar(100)
-  address       String          @db.VarChar(500)
-  province      String          @db.VarChar(100)
-  city          String          @db.VarChar(100)
-  likes         likes[]
-  promotion     promotion[]
-  recommend     recommend[]
-  rooms_image   rooms_image[]
-  rooms_intro   rooms_intro[]
-  rooms_special rooms_special[]
-  rooms_theme   rooms_theme[]
+  id                Int                 @id @default(autoincrement())
+  title             String              @unique(map: "title") @db.VarChar(300)
+  concept           String?             @db.VarChar(300)
+  type              String              @db.VarChar(100)
+  address           String              @db.VarChar(500)
+  province          String              @db.VarChar(100)
+  city              String              @db.VarChar(100)
+  likes             likes[]
+  promotion         promotion[]
+  recommend_to_user recommend_to_user[]
+  rooms_image       rooms_image[]
+  rooms_intro       rooms_intro[]
+  rooms_special     rooms_special[]
+  rooms_theme       rooms_theme[]
 }
 
 model rooms_image {
@@ -159,4 +150,13 @@ model users {
   updated_at        DateTime      @default(now()) @db.Timestamp(0)
   likes             likes[]
   reservation       reservation[]
+}
+
+model recommend_to_user {
+  id       Int     @id @default(autoincrement())
+  rooms_id Int
+  image    String? @db.VarChar(2000)
+  rooms    rooms   @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "recommend_to_user_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
 }
