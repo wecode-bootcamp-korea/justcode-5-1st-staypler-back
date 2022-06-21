@@ -1,6 +1,6 @@
 CREATE TABLE reservation(
   id int auto_increment primary key,
-  rooms_type_id int not null,
+  room_type_id int not null,
   user_id int not null,
   name varchar(100) not null,
   phone varchar(100) not null,
