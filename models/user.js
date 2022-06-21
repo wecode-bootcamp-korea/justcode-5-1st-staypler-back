@@ -1,7 +1,7 @@
-const prismaClient = require('./prisma-client');
+import prismaClient from './prisma-client.js';
 
-function createUser() {}
+async function createUser(user) {}
 
-function readUserByEmail(email) {}
+async function readUserByEmail(email) {}
 
 module.exports = { createUser, readUserByEmail };

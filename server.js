@@ -1,13 +1,17 @@
-require('dotenv').config();
+import http from 'http';
+import cors from 'cors';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import routes from './routes';
 
-const http = require('http');
-const express = require('express');
-const cors = require('cors');
-
-const routes = require('./routes');
+dotenv.config();
+const corsOption = {
+  origin: ['http://localhost:3000'],
+};
 
 const app = express();
-app.use(cors());
+app.use(cors(corsOption));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(routes);
 

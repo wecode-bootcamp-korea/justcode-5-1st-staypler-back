@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,158 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model likes {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  rooms_id   Int
+  isLike     Boolean?
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  rooms      rooms    @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "likes_ibfk_2")
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "likes_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
+  @@index([user_id], map: "user_id")
+}
+
+model promotion {
+  id         Int      @id @default(autoincrement())
+  rooms_id   Int
+  image      String?  @db.VarChar(2000)
+  start_date DateTime @db.Timestamp(0)
+  end_date   DateTime @db.Timestamp(0)
+  title      String?  @db.VarChar(300)
+  sub_title  String?  @db.VarChar(500)
+  rooms      rooms    @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "promotion_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
+}
+
+model recommend {
+  id       Int     @id @default(autoincrement())
+  rooms_id Int
+  image    String? @db.VarChar(2000)
+  rooms    rooms   @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "recommend_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
+}
+
+model reservation {
+  id           Int       @id @default(autoincrement())
+  room_type_id Int
+  user_id      Int
+  name         String    @db.VarChar(100)
+  phone        String    @db.VarChar(100)
+  email        String    @db.VarChar(200)
+  start_date   DateTime  @db.Timestamp(0)
+  end_date     DateTime  @db.Timestamp(0)
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  room_type    room_type @relation(fields: [room_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "reservation_ibfk_1")
+  users        users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reservation_ibfk_2")
+
+  @@index([room_type_id], map: "room_type_id")
+  @@index([user_id], map: "user_id")
+}
+
+model room_type {
+  id              Int               @id @default(autoincrement())
+  rooms_id        Int
+  title           String?           @db.VarChar(300)
+  type            String?           @db.VarChar(300)
+  min_limit       Int
+  max_limit       Int
+  price           Int
+  check_in_time   DateTime          @db.Timestamp(0)
+  check_out_time  DateTime          @db.Timestamp(0)
+  reservation     reservation[]
+  room_type_image room_type_image[]
+}
+
+model room_type_image {
+  id           Int       @id @default(autoincrement())
+  room_type_id Int
+  image        String?   @db.VarChar(2000)
+  room_type    room_type @relation(fields: [room_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "room_type_image_ibfk_1")
+
+  @@index([room_type_id], map: "room_type_id")
+}
+
+model rooms {
+  id            Int             @id @default(autoincrement())
+  title         String          @unique(map: "title") @db.VarChar(300)
+  concept       String?         @db.VarChar(300)
+  type          String          @db.VarChar(100)
+  address       String          @db.VarChar(500)
+  province      String          @db.VarChar(100)
+  city          String          @db.VarChar(100)
+  likes         likes[]
+  promotion     promotion[]
+  recommend     recommend[]
+  rooms_image   rooms_image[]
+  rooms_intro   rooms_intro[]
+  rooms_special rooms_special[]
+  rooms_theme   rooms_theme[]
+}
+
+model rooms_image {
+  id       Int     @id @default(autoincrement())
+  rooms_id Int
+  image    String? @db.VarChar(2000)
+  rooms    rooms   @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rooms_image_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
+}
+
+model rooms_intro {
+  id           Int     @id @default(autoincrement())
+  rooms_id     Int
+  title        String? @db.VarChar(300)
+  main_content String? @db.Text
+  sub_content  String? @db.Text
+  rooms        rooms   @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rooms_intro_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
+}
+
+model rooms_special {
+  id       Int     @id @default(autoincrement())
+  rooms_id Int
+  title    String? @db.VarChar(100)
+  content  String? @db.VarChar(2000)
+  image    String? @db.VarChar(2000)
+  rooms    rooms   @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rooms_special_ibfk_1")
+
+  @@index([rooms_id], map: "rooms_id")
+}
+
+model rooms_theme {
+  id       Int   @id @default(autoincrement())
+  rooms_id Int
+  theme_id Int
+  rooms    rooms @relation(fields: [rooms_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rooms_theme_ibfk_1")
+  theme    theme @relation(fields: [theme_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rooms_theme_ibfk_2")
+
+  @@index([rooms_id], map: "rooms_id")
+  @@index([theme_id], map: "theme_id")
+}
+
+model theme {
+  id          Int           @id @default(autoincrement())
+  name        String?       @db.VarChar(100)
+  rooms_theme rooms_theme[]
+}
+
+model users {
+  id                Int           @id @default(autoincrement())
+  email             String        @unique(map: "email") @db.VarChar(200)
+  name              String        @db.VarChar(100)
+  password          String        @db.VarChar(200)
+  phone             String        @db.VarChar(100)
+  profile_image_url String?       @db.VarChar(2000)
+  created_at        DateTime      @default(now()) @db.Timestamp(0)
+  updated_at        DateTime      @default(now()) @db.Timestamp(0)
+  likes             likes[]
+  reservation       reservation[]
 }
