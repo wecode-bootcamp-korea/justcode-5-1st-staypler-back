@@ -1,6 +1,9 @@
 import * as roomService from '../services/room.js';
 
-export function roomsController(req, res) {}
+export async function roomsController(req, res) {
+  const rooms = await roomService.getRooms(null, req.query);
+  res.status(201).json({ data: rooms });
+}
 
 export function roomsDetailController(req, res) {}
 
