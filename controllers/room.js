@@ -2,7 +2,7 @@ import * as roomService from '../services/room.js';
 
 export async function roomsController(req, res) {
   const rooms = await roomService.getRooms(null, req.query);
-  res.status(201).json({ data: rooms });
+  res.status(200).json({ data: rooms });
 }
 
 export function roomsDetailController(req, res) {}
