@@ -7,17 +7,17 @@ export async function readAll(id, date, filter, sortKeyword) {
     rooms.type,
     rooms.province,
     rooms.city,
-    JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN JSON_OBJECT('id', rooms_image.id, 'url',rooms_image.image) END) images,
+    ri.images,
+    IFNULL(rooms_like_sum.likes,0) likes,
     ${id ? `IFNULL(rooms_like.isLike,0) islike,` : ``}
     MAX(room_type.max_limit) max_limit,
     MIN(room_type.min_limit) min_limit,
     MAX(room_type.price) max_price,
     MIN(room_type.price) min_price,
-    IFNULL(rooms_like_sum.likes,0) likes,
     theme.name theme
 FROM rooms
-LEFT JOIN rooms_image
-ON rooms.id = rooms_image.rooms_id
+LEFT JOIN (SELECT rooms_image.rooms_id, JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN JSON_OBJECT('id', rooms_image.id, 'url',rooms_image.image) END) images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
+ON rooms.id = ri.rooms_id
 ${
   id
     ? `LEFT JOIN (SELECT id,rooms_id, isLike FROM likes WHERE user_id=${id} group by id) as rooms_like ON rooms_like.rooms_id = rooms.id`

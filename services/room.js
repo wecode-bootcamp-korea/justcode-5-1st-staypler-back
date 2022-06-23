@@ -13,7 +13,7 @@ export async function getRooms(id, query) {
   const sortKeyword = query.sort;
   const rooms = await roomRepositroy.readAll(id, date, filter, sortKeyword);
   const result = rooms.map(room => {
-    return { ...room, images: room.images.filter(Boolean) };
+    return { ...room, images: rooms.images ? room.images.filter(Boolean) : [] };
   });
 
   return result;
