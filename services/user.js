@@ -5,7 +5,7 @@ import * as userRepository from '../models/user.js';
 
 dotenv.config();
 
-    export const signup = async (email, password, username, phoneNumber) => {
+    export const signup = async (email, username, password, phoneNumber) => {
         //password validation
         const pwValidation = new RegExp('^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})');
         if (!pwValidation.test(password)) {
@@ -15,7 +15,7 @@ dotenv.config();
         }
     
         //중복 이메일
-        const userEmail = await user.readUserByEmail(email);
+        const userEmail = await userRepository.readUserByEmail(email);
         if (userEmail.length) {
             const err = new Error('EXSITING_USER');
             err.statusCode = 409;
@@ -29,16 +29,18 @@ dotenv.config();
             err.statusCode = 409;
             throw err;
         }
-    
+
+        console.log(username);
         //userName validation
         if (!username.length || username.length>10) {
             const err = new Error('USERNAME_IS_NOT_VALID');
             err.statusCode = 409;
             throw err;
         }
-    
+
+        console.log(phoneNumber);
         //phoneNumber validation
-        const phoneNumberValidation = new RegExp('^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})');
+        const phoneNumberValidation = new RegExp('^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})');
         if (!phoneNumberValidation.test(phoneNumber)) {
             const err = new Error('PHONE_NUMBER_IS_NOT_VALID');
             err.statusCode = 409;
@@ -47,10 +49,10 @@ dotenv.config();
     
         const encryptPw = bcrypt.hashSync(password, bcrypt.genSaltSync()); //솔팅 -> 임의로 생성된 문자열
         
-        const createUser = await user.createUser(
+        const createUser = await userRepository.createUser(
             email,
-            encryptPw,
             username,
+            encryptPw,
             phoneNumber
         );
     
@@ -59,7 +61,7 @@ dotenv.config();
 
     export const logIn = async (email, password) => {
         //회원가입한 유저인지 확인
-        const user = await user.readUserByEmail(email);
+        const user = await userRepository.readUserByEmail(email);
         if (user.length === 0 ) {
             const error = new Error('INVALID_USER');
             error.statusCode = 400;
@@ -67,10 +69,10 @@ dotenv.config();
         }
     
         //비밀번호 확인
-        const loginTryUser_Password = await user.passwordIsCorrect(email);
+        const loginTryUser_Password = await userRepository.passwordIsCorrect(email);
         const pwIsCorrect = bcrypt.compareSync(
             password,
-            user[0].password
+            loginTryUser_Password[0].password
         );
     
         if(!pwIsCorrect) {
@@ -79,7 +81,7 @@ dotenv.config();
             throw error;
         }
     
-        const id = await user.getUserIdByEmail(email);
-        const token = jwt.sign({ useerId: user[0].id }, process.env.SECRET_KEY);
+        const id = await userRepository.getUserIdByEmail(email);
+        const token = jwt.sign({ id: id, }, process.env.SECRET_KEY);
         return token;
     };

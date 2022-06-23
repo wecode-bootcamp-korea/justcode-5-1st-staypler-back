@@ -15,12 +15,12 @@ import * as userService from '../services/user.js';
 //controller에서는 오직 request 검증
   export const signupController = async (req, res) => {
     try {
-      const {email, password, username, phoneNumber} =
+      const {email, username, password, phoneNumber} =
         req.body;
         console.log(req.body);
   
   
-        await userService.signup(email, password, username, phoneNumber);
+        await userService.signup(email, username, password, phoneNumber);
         return res.status(201).json({
           message: 'SIGNUP_SUCCESS',
         });
