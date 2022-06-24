@@ -1,7 +1,0 @@
-INSERT INTO theme(name) VALUES ('사색')
-INSERT INTO theme(name) VALUES ('가족여행')
-INSERT INTO theme(name) VALUES ('갤러리')
-INSERT INTO theme(name) VALUES ('BBQ')
-INSERT INTO theme(name) VALUES ('파티하우스')
-INSERT INTO theme(name) VALUES ('노천탕')
-INSERT INTO theme(name) VALUES ('문화예술')
