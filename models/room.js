@@ -8,8 +8,9 @@ export async function checkId(roomId) {
   return room;
 }
 
-export async function readById(userId, roomId) {
-  const roomInfo = await prismaClient.$queryRawUnsafe(`SELECT
+export async function readById(userId, roomId, date) {
+  console.log(date);
+  const roomInfo = prismaClient.$queryRawUnsafe(`SELECT
 rooms.title,
 rooms.province,
 rooms.city,
@@ -24,7 +25,9 @@ rooms.address
 FROM (SELECT id, title, concept, address, province, city FROM rooms GROUP BY id) rooms
 JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN JSON_OBJECT('id', rooms_image.id, 'url',rooms_image.image) END)  images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
 ON rooms.id = ri.rooms_id
-JOIN (SELECT room_type.rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',room_type.title,'type',room_type.type,'price',room_type.price,'image',rti.image) END) room FROM room_type JOIN (SELECT id,room_type_id,image FROM room_type_image GROUP BY room_type_image.room_type_id ORDER BY room_type_id) rti ON rti.room_type_id=room_type.id  GROUP BY room_type.rooms_id) rt
+LEFT JOIN (SELECT room_type.rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',room_type.title,'type',room_type.type,'price',room_type.price,'image',rti.image) END) room FROM room_type JOIN (SELECT id,room_type_id,image FROM room_type_image GROUP BY room_type_image.room_type_id ORDER BY room_type_id) rti ON rti.room_type_id=room_type.id ${generateJoinStatement(
+    date
+  )} GROUP BY room_type.rooms_id) rt
 ON rt.rooms_id = rooms.id
 ${
   userId
@@ -40,6 +43,18 @@ WHERE rooms.id=${roomId}
 GROUP BY rooms.id`);
 
   return roomInfo;
+}
+
+function generateJoinStatement(date) {
+  return !!(date.start_date && date.end_date)
+    ? `LEFT JOIN reservation
+  ON reservation.room_type_id = room_type.id
+WHERE reservation.start_date
+NOT BETWEEN '${date.start_date}' AND '${date.end_date}'
+AND reservation.end_date
+NOT BETWEEN '${date.start_date}' AND '${date.end_date}'
+OR reservation.start_date IS NULL AND reservation.end_date IS NULL`
+    : ``;
 }
 
 export async function createLike(id) {}

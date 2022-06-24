@@ -4,7 +4,10 @@ export function roomsController(req, res) {}
 
 export async function roomsDetailController(req, res) {
   try {
-    const result = await roomService.getRoomsById(null, req.params.id);
+    const result = await roomService.getRoomsById(null, req.params.id, {
+      start_date: req.query.start_date,
+      end_date: req.query.end_date,
+    });
     res.status(200).json({ data: result });
   } catch (error) {
     res.status(error.statusCode || 400).json({ message: error.message });
