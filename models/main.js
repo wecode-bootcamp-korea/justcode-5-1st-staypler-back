@@ -20,6 +20,24 @@ WHERE CURDATE() BETWEEN promotion.start_date AND promotion.end_date`;
   return promotionList;
 }
 
-export async function readRoomsOfRecommend() {}
+export async function readRoomsOfRecommend() {
+  const recommendList = await prismaClient.$queryRaw`
+  SELECT recommend_to_user.id, recommend_to_user.rooms_id, recommend_to_user.image, r.title, r.province, r.city, r.max_price, r.min_price
+FROM recommend_to_user
+LEFT JOIN (SELECT
+               rooms.id,
+               rooms.title,
+               rooms.province,
+               rooms.city,
+               MAX(room_type.price) max_price, 
+               MIN(room_type.price) min_price
+           FROM rooms
+               JOIN room_type
+                   ON rooms.id = room_type.rooms_id
+           GROUP BY rooms.id) r
+ON recommend_to_user.rooms_id = r.id`;
+
+  return recommendList;
+}
 
 export async function readRoomsOfBanner() {}

@@ -9,6 +9,13 @@ export async function promotionController(req, res) {
   }
 }
 
-export function recommendController(req, res) {}
+export async function recommendController(req, res) {
+  try {
+    const data = await mainService.getRecommendRooms();
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 export function bannerController(req, res) {}

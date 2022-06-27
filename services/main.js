@@ -5,6 +5,9 @@ export async function getPromotionRooms() {
   return promotionList;
 }
 
-export function getRecommendRooms() {}
+export async function getRecommendRooms() {
+  const recommendList = await mainRepository.readRoomsOfRecommend();
+  return recommendList;
+}
 
 export function getBannerRooms() {}
