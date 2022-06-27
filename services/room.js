@@ -8,6 +8,9 @@ export function likeRooms(id) {}
 
 export function getRoomOfRooms(id) {}
 
-export function getBookingInfoOfRooms(id) {}
+export async function getBookingInfoOfRooms(id, userId, date) {
+  const data = await roomRepositroy.readBookingInfo(id, userId, date);
+  return data;
+}
 
 export function paymentOfBooking(bookingInfo) {}
