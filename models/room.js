@@ -9,7 +9,6 @@ export async function checkId(roomId) {
 }
 
 export async function readById(userId, roomId, date) {
-  console.log(date);
   const roomInfo = prismaClient.$queryRawUnsafe(`SELECT
 rooms.title,
 rooms.province,
