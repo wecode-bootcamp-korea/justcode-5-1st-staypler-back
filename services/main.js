@@ -4,4 +4,7 @@ export function getPromotionRooms() {}
 
 export function getRecommendRooms() {}
 
-export function getBannerRooms() {}
+export async function getBannerRooms() {
+  const bannerList = await mainRepository.readRoomsOfBanner();
+  return bannerList;
+}
