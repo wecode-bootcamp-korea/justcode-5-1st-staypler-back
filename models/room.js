@@ -1,6 +1,6 @@
 import prismaClient from './prisma-client.js';
 
-export async function readAll(id, date, filter, sortKeyword) {
+export async function readAll(id, date, filter, sortKeyword, lastId) {
   const rooms = prismaClient.$queryRawUnsafe(`SELECT
     rooms.id,
     rooms.title,
@@ -29,15 +29,57 @@ ON rooms_like_sum.rooms_id = rooms.id
 LEFT JOIN (SELECT rooms_id, theme.name FROM theme JOIN rooms_theme on theme.id = rooms_theme.theme_id) theme
 ON theme.rooms_id = rooms.id
 LEFT JOIN reservation on room_type.id = reservation.room_type_id
+WHERE rooms.id >= ${lastId}
 GROUP BY rooms.id${id ? `, islike` : ``}
 ${generateHavingStatement(filter)}
 ${generateOrderByStatemnet(sortKeyword)}
+LIMIT 10
+`);
+  return rooms;
+}
+
+export async function readAllLength(id, date, filter, sortKeyword, lastId) {
+  const rooms = prismaClient.$queryRawUnsafe(`SELECT
+    rooms.id,
+    rooms.title,
+    rooms.type,
+    rooms.province,
+    rooms.city,
+    ri.images,
+    IFNULL(rooms_like_sum.likes,0) likes,
+    ${id ? `IFNULL(rooms_like.isLike,0) islike,` : ``}
+    MAX(room_type.max_limit) max_limit,
+    MIN(room_type.min_limit) min_limit,
+    MAX(room_type.price) max_price,
+    MIN(room_type.price) min_price,
+    theme.name theme
+FROM rooms
+LEFT JOIN (SELECT rooms_image.rooms_id, JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN JSON_OBJECT('id', rooms_image.id, 'url',rooms_image.image) END) images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
+ON rooms.id = ri.rooms_id
+${
+  id
+    ? `LEFT JOIN (SELECT id,rooms_id, isLike FROM likes WHERE user_id=${id} group by id) as rooms_like ON rooms_like.rooms_id = rooms.id`
+    : ``
+} 
+${generateJoinDateStatement(date.start_date, date.end_date)}
+LEFT JOIN (SELECT rooms_id, SUM(isLike) likes FROM likes group by rooms_id) rooms_like_sum
+ON rooms_like_sum.rooms_id = rooms.id
+LEFT JOIN (SELECT rooms_id, theme.name FROM theme JOIN rooms_theme on theme.id = rooms_theme.theme_id) theme
+ON theme.rooms_id = rooms.id
+LEFT JOIN reservation on room_type.id = reservation.room_type_id
+WHERE rooms.id >= ${lastId}
+GROUP BY rooms.id${id ? `, islike` : ``}
+${generateHavingStatement(filter)}
+${generateOrderByStatemnet(sortKeyword)}
+LIMIT 10
 `);
   return rooms;
 }
 
 function generateOrderByStatemnet(orderkeyword) {
-  return orderkeyword ? ` ORDER BY ${orderkeyword}` : '';
+  return orderkeyword
+    ? ` ORDER BY rooms.id,${orderkeyword}`
+    : ' ORDER BY rooms.id';
 }
 
 function generateHavingStatement({
@@ -73,9 +115,9 @@ function generateJoinDateStatement(date) {
     LEFT JOIN reservation
     ON room_type.id = reservation.room_type_id
     WHERE reservation.start_date
-    NOT BETWEEN ${date.start_date} AND ${date.end_date}
+    NOT BETWEEN '${date.start_date}' AND '${date.end_date}'
     AND reservation.end_date
-    NOT BETWEEN ${date.start_date} AND ${date.end_date}
+    NOT BETWEEN '${date.start_date}' AND '${date.end_date}'
     OR reservation.start_date IS NULL AND reservation.end_date IS NULL) room_type
     ON rooms.id = room_type.rooms_id`
     : `JOIN room_type ON rooms.id = room_type.rooms_id`;
