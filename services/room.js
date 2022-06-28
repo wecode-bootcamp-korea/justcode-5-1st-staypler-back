@@ -32,7 +32,10 @@ export async function getRoomsById(userId, roomsId, date) {
 
 export function likeRooms(id) {}
 
-export function getRoomOfRooms(id) {}
+export async function getRoomOfRooms(id, date) {
+  const result = await roomRepositroy.readRoomById(id, date);
+  return result;
+}
 
 export async function getBookingInfoOfRooms(id, userId, date) {
   const data = await roomRepositroy.readBookingInfo(id, userId, date);
