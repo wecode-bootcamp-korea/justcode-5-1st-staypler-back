@@ -1,7 +1,16 @@
 import * as mainRepository from '../models/main.js';
 
-export function getPromotionRooms() {}
+export async function getPromotionRooms() {
+  const promotionList = await mainRepository.readRoomsOfPromotion();
+  return promotionList;
+}
 
-export function getRecommendRooms() {}
+export async function getRecommendRooms() {
+  const recommendList = await mainRepository.readRoomsOfRecommend();
+  return recommendList;
+}
 
-export function getBannerRooms() {}
+export async function getBannerRooms() {
+  const bannerList = await mainRepository.readRoomsOfBanner();
+  return bannerList;
+}
