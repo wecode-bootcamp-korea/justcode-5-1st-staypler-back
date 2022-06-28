@@ -7,9 +7,9 @@ router.get('/', roomController.roomsController);
 
 router.get('/room/bookings', roomController.roomsBookingInfoController);
 router.get('/room', roomController.roomsRoomController);
+router.post('/payment', roomController.roomsPaymentController);
 router.get('/:id', roomController.roomsDetailController);
 router.post('/:id/like', roomController.roomsLikeController);
 router.get('/:id/room', roomController.roomsRoomController);
-router.post('/payment', roomController.roomsPaymentController);
 
 export default router;
