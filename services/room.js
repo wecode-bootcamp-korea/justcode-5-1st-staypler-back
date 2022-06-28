@@ -44,13 +44,11 @@ export async function getBookingInfoOfRooms(id, userId, date) {
 
 export async function paymentOfBooking(userId, roomId, bookingInfo) {
   // 해당 날짜에 예약이 가능한지 추가 확인을 한다.
-  console.log(roomId, bookingInfo.start_date, bookingInfo.end_date);
   const check = await roomRepositroy.checkReservation(
     roomId,
     bookingInfo.start_date,
     bookingInfo.end_date
   );
-  console.log(check);
   if (!!check.length) {
     const error = new Error('해당 날짜는 예약이 마감되었습니다.');
     error.statusCode = 400;

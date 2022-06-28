@@ -199,7 +199,6 @@ HAVING room_type.id = ${room_id}`);
 }
 
 export async function createBooking(userId, roomId, bookingInfo) {
-  // userId, roomId, bookingInfo
   const result = prismaClient.$queryRawUnsafe(`
   INSERT INTO reservation(room_type_id,user_id,name,phone,email,number,start_date,end_date) VALUES(${roomId},${userId},'${bookingInfo.name}','${bookingInfo.phone_number}','${bookingInfo.email}',${bookingInfo.number} ,'${bookingInfo.start_date}','${bookingInfo.end_date}');
   `);
