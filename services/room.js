@@ -37,6 +37,9 @@ export async function getRoomOfRooms(id, date) {
   return result;
 }
 
-export function getBookingInfoOfRooms(id) {}
+export async function getBookingInfoOfRooms(id, userId, date) {
+  const data = await roomRepositroy.readBookingInfo(id, userId, date);
+  return data;
+}
 
 export function paymentOfBooking(bookingInfo) {}
