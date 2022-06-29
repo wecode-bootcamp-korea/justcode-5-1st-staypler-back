@@ -6,18 +6,10 @@ const router = express.Router();
 
 router.get('/', validateToken, myPageController.myPageController);
 router.put('/', validateToken, myPageController.myPageUpdateController);
-router.put(
-  '/mypage/password',
-  validateToken,
-  myPageController.myPagePasswordUpdateController
-);
+router.put('/password', validateToken, myPageController.updatePassword);
+router.get('/like', validateToken, myPageController.myPageLikeController);
 router.get(
-  '/mypage/like',
-  validateToken,
-  myPageController.myPageLikeController
-);
-router.get(
-  '/mypage/bookings',
+  '/bookings',
   validateToken,
   myPageController.myPageBookingController
 );
