@@ -4,14 +4,12 @@ import { validateToken } from '../middleware/authorization.js';
 
 const router = express.Router();
 
-router.get('/', validateToken, myPageController.myPageController);
-router.put('/', validateToken, myPageController.myPageUpdateController);
-router.put('/password', validateToken, myPageController.updatePassword);
-router.get('/like', validateToken, myPageController.myPageLikeController);
-router.get(
-  '/bookings',
-  validateToken,
-  myPageController.myPageBookingController
-);
+router.use(validateToken);
+
+router.get('/', myPageController.myPageController);
+router.put('/', myPageController.myPageUpdateController);
+router.put('/password', myPageController.updatePassword);
+router.get('/like', myPageController.myPageLikeController);
+router.get('/bookings', myPageController.myPageBookingController);
 
 export default router;
