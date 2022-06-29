@@ -1,15 +1,20 @@
 import express from 'express';
 import * as roomController from '../controllers/room.js';
+import { validateToken } from '../middleware/authorization.js';
 
 const router = express.Router();
 
 router.get('/', roomController.roomsController);
 
-router.get('/room/bookings', roomController.roomsBookingInfoController);
+router.get(
+  '/room/bookings',
+  validateToken,
+  roomController.roomsBookingInfoController
+);
 router.get('/room', roomController.roomsRoomController);
-router.post('/payment', roomController.roomsPaymentController);
+router.post('/payment', validateToken, roomController.roomsPaymentController);
 router.get('/:id', roomController.roomsDetailController);
-router.post('/:id/like', roomController.roomsLikeController);
+router.post('/:id/like', validateToken, roomController.roomsLikeController);
 router.get('/:id/room', roomController.roomsRoomController);
 
 export default router;
