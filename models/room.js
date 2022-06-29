@@ -149,7 +149,22 @@ OR reservation.start_date IS NULL AND reservation.end_date IS NULL`
     : ``;
 }
 
-export async function createLike(id) {}
+export async function createLike(userId, roomId) {
+  return await prismaClient.$queryRaw`INSERT INTO likes (user_id,rooms_id,isLike) VALUES (${userId},${roomId},${true})`;
+}
+
+export async function updateLike(userId, roomId, statusOfLike) {
+  return await prismaClient.$queryRaw`
+  UPDATE likes SET isLike=${statusOfLike} WHERE user_id=${userId} AND rooms_id=${roomId}
+  `;
+}
+
+export async function checkLike(userId, roomId) {
+  const [result] = await prismaClient.$queryRaw`
+  SELECT isLike FROM likes WHERE user_id=${userId} AND rooms_id=${roomId}
+  `;
+  return result;
+}
 
 export async function readRoomById(id, date) {
   const room = await prismaClient.$queryRawUnsafe(`

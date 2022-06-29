@@ -41,7 +41,16 @@ export async function getRoomsById(userId, roomsId, date) {
   }
 }
 
-export function likeRooms(id) {}
+export async function likeRooms(userId, roomId) {
+  const check = await roomRepositroy.checkLike(userId, roomId);
+  if (!check) {
+    await roomRepositroy.createLike(userId, roomId);
+    return { isLike: true };
+  } else {
+    await roomRepositroy.updateLike(userId, roomId, !check.isLike);
+    return { isLike: !check.isLike };
+  }
+}
 
 export async function getRoomOfRooms(id, date) {
   const result = await roomRepositroy.readRoomById(id, date);

@@ -21,7 +21,14 @@ export async function roomsDetailController(req, res) {
   }
 }
 
-export function roomsLikeController(req, res) {}
+export async function roomsLikeController(req, res) {
+  try {
+    const result = await roomService.likeRooms(req.userId, req.params.id);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
+}
 
 export async function roomsRoomController(req, res) {
   try {
