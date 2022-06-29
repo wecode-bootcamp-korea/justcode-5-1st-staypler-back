@@ -1,6 +1,6 @@
 import prismaClient from './prisma-client.js';
 
-export async function readAll(id, date, filter, sortKeyword, page) {
+export async function readAll(id, date, keyword, filter, sortKeyword, page) {
   const sql = `SELECT
   rooms.id,
   rooms.title,
@@ -29,10 +29,10 @@ ON rooms_like_sum.rooms_id = rooms.id
 LEFT JOIN (SELECT rooms_id, theme.name FROM theme JOIN rooms_theme on theme.id = rooms_theme.theme_id) theme
 ON theme.rooms_id = rooms.id
 LEFT JOIN reservation on room_type.id = reservation.room_type_id
+${keyword ? `WHERE rooms.title LIKE '%${keyword}%'` : ``}
 GROUP BY rooms.id${id ? `, islike` : ``}
 ${generateHavingStatement(filter)}
 ${generateOrderByStatemnet(sortKeyword)}
-
 `;
   const roomsCnt = await prismaClient.$queryRawUnsafe(
     `SELECT COUNT(*) total_rows FROM (${sql}) t`
@@ -40,7 +40,6 @@ ${generateOrderByStatemnet(sortKeyword)}
   const rooms = await prismaClient.$queryRawUnsafe(
     sql + generateLimitOffsetStatement(page)
   );
-
   return [rooms, roomsCnt];
 }
 
