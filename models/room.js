@@ -189,9 +189,9 @@ FROM room_type
 LEFT JOIN reservation
 ON reservation.room_type_id = room_type.id
 WHERE reservation.start_date
-NOT BETWEEN '${start_date}' AND '${end_date}'
+BETWEEN '${start_date}' AND '${end_date}'
 AND reservation.end_date
-NOT BETWEEN '${start_date}' AND '${end_date}'
+BETWEEN '${start_date}' AND '${end_date}'
 OR reservation.start_date IS NULL AND reservation.end_date IS NULL
 GROUP BY room_type.id
 HAVING room_type.id = ${room_id}`);
