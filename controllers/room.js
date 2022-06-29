@@ -48,4 +48,20 @@ export async function roomsBookingInfoController(req, res) {
   }
 }
 
-export function roomsPaymentController(req, res) {}
+export async function roomsPaymentController(req, res) {
+  const { name, phone_number, email, number, start_date, end_date } = req.body;
+  const room_id = req.query.room_id;
+  try {
+    await roomService.paymentOfBooking(1, room_id, {
+      name,
+      phone_number,
+      email,
+      number,
+      start_date,
+      end_date,
+    });
+    res.status(201).json({ message: '예약이 완료되었습니다.' });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
+}

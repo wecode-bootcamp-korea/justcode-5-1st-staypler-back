@@ -183,4 +183,25 @@ WHERE room_type.id=${id}`);
   return result;
 }
 
-export async function createBooking(bookingInfo) {}
+export async function checkReservation(room_id, start_date, end_date) {
+  const check = prismaClient.$queryRawUnsafe(`SELECT room_type.id
+FROM room_type
+LEFT JOIN reservation
+ON reservation.room_type_id = room_type.id
+WHERE reservation.start_date
+NOT BETWEEN '${start_date}' AND '${end_date}'
+AND reservation.end_date
+NOT BETWEEN '${start_date}' AND '${end_date}'
+OR reservation.start_date IS NULL AND reservation.end_date IS NULL
+GROUP BY room_type.id
+HAVING room_type.id = ${room_id}`);
+  return check;
+}
+
+export async function createBooking(userId, roomId, bookingInfo) {
+  // userId, roomId, bookingInfo
+  const result = prismaClient.$queryRawUnsafe(`
+  INSERT INTO reservation(room_type_id,user_id,name,phone,email,number,start_date,end_date) VALUES(${roomId},${userId},'${bookingInfo.name}','${bookingInfo.phone_number}','${bookingInfo.email}',${bookingInfo.number} ,'${bookingInfo.start_date}','${bookingInfo.end_date}');
+  `);
+  return result;
+}

@@ -12,9 +12,9 @@ router.get(
   roomController.roomsBookingInfoController
 );
 router.get('/room', roomController.roomsRoomController);
+router.post('/payment', validateToken, roomController.roomsPaymentController);
 router.get('/:id', roomController.roomsDetailController);
 router.post('/:id/like', validateToken, roomController.roomsLikeController);
 router.get('/:id/room', roomController.roomsRoomController);
-router.post('/payment', validateToken, roomController.roomsPaymentController);
 
 export default router;
