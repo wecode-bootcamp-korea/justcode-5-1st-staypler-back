@@ -3,6 +3,8 @@ import * as roomRepositroy from '../models/room.js';
 export async function getRooms(id, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
 
+  const page = parseInt(query.page) - 1;
+  const keyword = query.search;
   const filter = {
     min_price: query.min_price,
     max_price: query.max_price,
@@ -10,13 +12,22 @@ export async function getRooms(id, query) {
     max_limit: query.max_limit,
     theme: query.theme,
   };
+
   const sortKeyword = query.sort;
-  const rooms = await roomRepositroy.readAll(id, date, filter, sortKeyword);
+
+  const [rooms, roomsCnt] = await roomRepositroy.readAll(
+    id,
+    date,
+    keyword,
+    filter,
+    sortKeyword,
+    page
+  );
+
   const result = rooms.map(room => {
     return { ...room, images: rooms.images ? room.images.filter(Boolean) : [] };
   });
-
-  return result;
+  return [result, roomsCnt[0].total_rows];
 }
 
 export async function getRoomsById(userId, roomsId, date) {
@@ -44,13 +55,11 @@ export async function getBookingInfoOfRooms(id, userId, date) {
 
 export async function paymentOfBooking(userId, roomId, bookingInfo) {
   // 해당 날짜에 예약이 가능한지 추가 확인을 한다.
-  console.log(roomId, bookingInfo.start_date, bookingInfo.end_date);
   const check = await roomRepositroy.checkReservation(
     roomId,
     bookingInfo.start_date,
     bookingInfo.end_date
   );
-  console.log(check);
   if (!!check.length) {
     const error = new Error('해당 날짜는 예약이 마감되었습니다.');
     error.statusCode = 400;
