@@ -38,29 +38,14 @@ export const loginController = async (req, res) => {
       token: token,
     });
   } catch (err) {
-
     return res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
-
-
-export const updatePassword = async (req, res) => {
-  try {
-    const { current_password, new_password, confirm_new_password } = req.body;
-    const userId = req.userId;
-    await userService.updatePassword(
-      userId,
-      current_password,
-      new_password,
-      confirm_new_password
-    );
-    res.status(200).json({ message: '비밀번호가 변경되었습니다.' });
 
 export const me = async (req, res) => {
   try {
     await userService.me(req.userId);
     res.status(200).json({ token: req.token });
-
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
   }
