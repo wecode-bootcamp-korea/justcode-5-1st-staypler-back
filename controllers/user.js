@@ -15,14 +15,12 @@ export const validateUser = async (req, res, next) => {
 export const signupController = async (req, res) => {
   try {
     const { email, username, password, phoneNumber } = req.body;
-    console.log(req.body);
 
     await userService.signup(email, username, password, phoneNumber);
     return res.status(201).json({
       message: 'SIGNUP_SUCCESS',
     });
   } catch (err) {
-    console.log(err);
     return res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
@@ -40,10 +38,11 @@ export const loginController = async (req, res) => {
       token: token,
     });
   } catch (err) {
-    console.log(err);
+
     return res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
+
 
 export const updatePassword = async (req, res) => {
   try {
@@ -56,6 +55,12 @@ export const updatePassword = async (req, res) => {
       confirm_new_password
     );
     res.status(200).json({ message: '비밀번호가 변경되었습니다.' });
+
+export const me = async (req, res) => {
+  try {
+    await userService.me(req.userId);
+    res.status(200).json({ token: req.token });
+
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
   }

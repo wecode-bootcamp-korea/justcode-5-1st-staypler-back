@@ -34,7 +34,6 @@ export const signup = async (email, username, password, phoneNumber) => {
     throw err;
   }
 
-  console.log(username);
   //userName validation
   if (!username.length || username.length > 10) {
     const err = new Error('USERNAME_IS_NOT_VALID');
@@ -42,7 +41,6 @@ export const signup = async (email, username, password, phoneNumber) => {
     throw err;
   }
 
-  console.log(phoneNumber);
   //phoneNumber validation
   const phoneNumberValidation = new RegExp(
     '^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})'
@@ -87,8 +85,9 @@ export const logIn = async (email, password) => {
     throw error;
   }
 
-  const id = await userRepository.getUserIdByEmail(email);
-  const token = jwt.sign({ id: id }, process.env.SECRET_KEY);
+
+  const [{ id }] = await userRepository.getUserIdByEmail(email);
+  const token = jwt.sign({ id }, process.env.SECRET_KEY);
   return token;
 };
 
@@ -116,4 +115,16 @@ const updatePassword = async (
   const encryptPw = bcrypt.hash(newPassword, salt);
 
   return await userRepository.updatePassword(userId, encryptPw);
+ 
+};
+
+export const me = async userId => {
+  console.log(userId);
+  const user = await userRepository.getUserIdbyId(userId);
+  if (user.length === 0) {
+    const error = new Error('User Not Found');
+    error.statusCode = 404;
+    throw error;
+  }
+  return;
 };
