@@ -1,22 +1,26 @@
-const jwt = require('jsonwebtoken');
-const userDao = require('../models/user.js');
+import jwt from 'jsonwebtoken';
+import * as userRepository from '../models/user.js';
+import dotenv from 'dotenv';
 
-const validateToken = async (req, res, next) => {
-    const token = req.headers.authorization || '';
-    if(!token || token === '') {
-        res.status(404).json({ message: 'USER_NOT_FOUND' });
-        return;
+dotenv.config();
+const AUTH_ERROR = { message: 'Authentication Error' };
+export const validateToken = async (req, res, next) => {
+  const authHeader = req.get('Authorization');
+  if (!(authHeader && authHeader.startsWith('Bearer '))) {
+    return res.status(401).json(AUTH_ERROR);
+  }
+
+  const token = authHeader.split(' ')[1];
+  jwt.verify(token, process.env.SECRET_KEY, async (error, decoded) => {
+    if (error) {
+      return res.status(401).json(AUTH_ERROR);
     }
-
-    const user = jwt.verify(token, process.env.SECRET_KEY);
-    console.log(user);
-    const checkUser = await user.getUserIdbyId(
-        user.id[0] ? user.id[0].id : ''
-    );
-
-    req.userId = user.id[0].id;
-
+    const user = await userRepository.getUserIdbyId(decoded.id);
+    if (!user) {
+      return res.status(401).json(AUTH_ERROR);
+    }
+    req.userId = user[0].id;
+    req.token = token;
     next();
+  });
 };
-
-module.exports = {validateToken};
