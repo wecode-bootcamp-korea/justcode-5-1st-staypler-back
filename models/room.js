@@ -190,6 +190,13 @@ GROUP BY reservations.id`);
   return room;
 }
 
+export async function roomCheck(id) {
+  const room = prismaClient.$queryRaw`
+  SELECT * FROM room_type WHERE id=${id}
+  `;
+  return room;
+}
+
 const generateWhereStatement = date => {
   return date.start_date && date.end_date
     ? `WHERE reservation.start_date
