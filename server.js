@@ -10,7 +10,7 @@ import myPageRouter from './routes/mypage.js';
 
 dotenv.config();
 const corsOption = {
-  origin: ['http://localhost:3000'],
+  origin: '*',
 };
 
 const app = express();

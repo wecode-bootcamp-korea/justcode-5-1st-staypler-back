@@ -2,7 +2,7 @@ import prismaClient from './prisma-client.js';
 
 export async function readRoomsOfPromotion() {
   const promotionList = await prismaClient.$queryRaw`
-  SELECT r.title room_name, r.type, r.province, r.city, promotion.image, promotion.title promotion_title, promotion.sub_title promotion_sub_title,TIMESTAMPDIFF(DAY,promotion.start_date, promotion.end_date) left_days
+  SELECT promotion.id, r.id room_id, r.title room_name, r.type room_type, r.province, r.city, promotion.image, promotion.title promotion_title, promotion.sub_title promotion_sub_title,TIMESTAMPDIFF(DAY,promotion.start_date, promotion.end_date) left_days
 FROM promotion
 JOIN (SELECT rooms.id,
              rooms.title,
@@ -16,7 +16,6 @@ JOIN (SELECT rooms.id,
       FROM rooms JOIN room_type ON rooms.id = room_type.rooms_id GROUP BY rooms.id) r
 ON r.id = promotion.rooms_id
 WHERE CURDATE() BETWEEN promotion.start_date AND promotion.end_date`;
-
   return promotionList;
 }
 
@@ -36,13 +35,12 @@ LEFT JOIN (SELECT
                    ON rooms.id = room_type.rooms_id
            GROUP BY rooms.id) r
 ON recommend_to_user.rooms_id = r.id`;
-
   return recommendList;
 }
 
 export async function readRoomsOfBanner() {
   const bannerList = await prismaClient.$queryRaw`
-  SELECT rooms.id, rooms.title, banners.image, rooms.concept
+  SELECT banners.id, rooms.id room_id, rooms.title room_name, banners.image, rooms.concept
 FROM banners
 JOIN rooms
 ON banners.rooms_id = rooms.id`;

@@ -13,8 +13,9 @@ router.get(
 );
 router.get('/room', roomController.roomsRoomController);
 router.post('/payment', validateToken, roomController.roomsPaymentController);
+router.get('/:id/room', roomController.roomsRoomController);
 router.get('/:id', roomController.roomsDetailController);
 router.post('/:id/like', validateToken, roomController.roomsLikeController);
-router.get('/:id/room', roomController.roomsRoomController);
+
 
 export default router;

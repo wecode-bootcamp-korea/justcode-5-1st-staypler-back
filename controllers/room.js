@@ -25,7 +25,7 @@ export function roomsLikeController(req, res) {}
 
 export async function roomsRoomController(req, res) {
   try {
-    const result = await roomService.getRoomOfRooms(req.query.room_id, {
+    const result = await roomService.getRoomOfRooms(req.params.id, {
       start_date: req.query.start_date,
       end_date: req.query.end_date,
     });

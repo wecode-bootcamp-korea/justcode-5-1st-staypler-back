@@ -103,7 +103,7 @@ export async function checkId(roomId) {
 
 export async function readById(userId, roomId, date) {
   const roomInfo = prismaClient.$queryRawUnsafe(`SELECT
-rooms.title,
+rooms.title room_name,
 rooms.province,
 rooms.city,
 rooms.concept,
@@ -167,9 +167,10 @@ LEFT JOIN reservation
 ON reservation.room_type_id = room_type.id
 ${generateWhereStatement(date)}) reservations
 ON reservations.id = room_type.id
-LEFT JOIN reservation 
+LEFT JOIN (SELECT room_type_id FROM reservation GROUP BY room_type_id) reservation 
 ON room_type.id = reservation.room_type_id
-WHERE reservations.id =${id}`);
+WHERE reservations.id =${id}
+GROUP BY reservations.id`);
 
   return room;
 }
