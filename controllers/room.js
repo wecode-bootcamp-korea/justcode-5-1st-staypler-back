@@ -19,9 +19,9 @@ export async function roomsController(req, res) {
 
 export async function roomsDetailController(req, res) {
   try {
-    const authHeader = req.get('Authorization');
-    const token = authHeader.split(' ')[1];
-    const data = jwt.verify(token, process.env.SECRET_KEY);
+    const authHeader = req.get('Authorization') || '';
+    const token = authHeader ? authHeader.split(' ')[1] : '';
+    const data = token ? jwt.verify(token, process.env.SECRET_KEY) : '';
     const result = await roomService.getRoomsById(data.id, req.params.id, {
       start_date: req.query.start_date,
       end_date: req.query.end_date,
