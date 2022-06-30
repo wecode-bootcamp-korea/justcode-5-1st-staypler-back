@@ -174,7 +174,7 @@ export async function readRoomById(id, date) {
         : ``
     } room_type.min_limit, room_type.max_limit
 FROM room_type
-LEFT JOIN (SELECT room_type_image.id,room_type_image.room_type_id,JSON_ARRAYAGG(CASE WHEN room_type_image.id IS NOT NULL THEN JSON_OBJECT('id',room_type_image.id,'image',room_type_image.image) END ) images FROM room_type_image GROUP BY room_type_image.room_type_id) rti
+LEFT JOIN (SELECT room_type_image.id,room_type_image.room_type_id,JSON_ARRAYAGG(CASE WHEN room_type_image.id IS NOT NULL THEN room_type_image.image END ) images FROM room_type_image GROUP BY room_type_image.room_type_id) rti
 ON rti.room_type_id = room_type.id
 JOIN (SELECT room_type.id
 FROM room_type
@@ -187,6 +187,13 @@ ON room_type.id = reservation.room_type_id
 WHERE reservations.id =${id}
 GROUP BY reservations.id`);
 
+  return room;
+}
+
+export async function roomCheck(id) {
+  const room = prismaClient.$queryRaw`
+  SELECT * FROM room_type WHERE id=${id}
+  `;
   return room;
 }
 

@@ -53,13 +53,27 @@ export async function likeRooms(userId, roomId) {
 }
 
 export async function getRoomOfRooms(id, date) {
-  const result = await roomRepositroy.readRoomById(id, date);
-  return result;
+  const check = await roomRepositroy.roomCheck(id);
+  if (!!check.length) {
+    const result = await roomRepositroy.readRoomById(id, date);
+    return result;
+  } else {
+    const error = new Error('Page Not Found');
+    error.statusCode = 404;
+    throw error;
+  }
 }
 
 export async function getBookingInfoOfRooms(id, userId, date) {
-  const data = await roomRepositroy.readBookingInfo(id, userId, date);
-  return data;
+  const check = await roomRepositroy.roomCheck(id);
+  if (!!check.length) {
+    const data = await roomRepositroy.readBookingInfo(id, userId, date);
+    return data;
+  } else {
+    const error = new Error('Page Not Found');
+    error.statusCode = 404;
+    throw error;
+  }
 }
 
 export async function paymentOfBooking(userId, roomId, bookingInfo) {
