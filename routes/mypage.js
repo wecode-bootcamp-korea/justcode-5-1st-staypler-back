@@ -8,6 +8,7 @@ router.use(validateToken);
 
 router.get('/', myPageController.myPageController);
 router.put('/', myPageController.myPageUpdateController);
+router.get('/header', myPageController.mypageHeaderController);
 router.put('/password', myPageController.updatePassword);
 router.get('/like', myPageController.myPageLikeController);
 router.get('/bookings', myPageController.myPageBookingController);

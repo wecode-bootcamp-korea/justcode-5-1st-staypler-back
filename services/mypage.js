@@ -1,4 +1,5 @@
 import * as userRepository from '../models/user.js';
+import * as myPageRepository from '../models/mypage.js';
 import bcrypt from 'bcrypt';
 
 export function getMyPage(id) {}
@@ -33,8 +34,12 @@ export const updatePassword = async (
 
 export async function getWishRooms({ id, page, count, getImageAll }) {
   const maxPage = await myPageRepository.readWishRoomsCount(id);
-  const data = await myPageRepository.readWishRooms(id, page, count);
-
+  const data = await myPageRepository.readWishRooms(
+    id,
+    page,
+    count,
+    getImageAll
+  );
   if (getImageAll === '1') {
     for (let i = 0; i < data.length; i++) {
       delete data[i].concept;
@@ -58,4 +63,33 @@ export async function getWishRooms({ id, page, count, getImageAll }) {
   };
 }
 
-export function getBookingRooms(id) {}
+export async function getBookingRooms({ id, page, count, getImageAll }) {
+  const maxPage = await myPageRepository.readBookingRoomsCount(id);
+  const data = await myPageRepository.readBookingRooms(
+    id,
+    page,
+    count,
+    getImageAll
+  );
+  if (getImageAll === '1') {
+    for (let i = 0; i < data.length; i++) {
+      data[i].image = await myPageRepository.readRoomsImages(data[i].id);
+      data[i].image = data[i].image.map(image => image.image);
+    }
+  }
+  return {
+    data,
+    maxPage: Math.ceil(maxPage[0].cnt / count),
+  };
+}
+
+export async function getHeader(userId) {
+  const [check] = await userRepository.getUserIdbyId(userId);
+  if (!check) {
+    const error = new Error('User Not Found');
+    error.statusCode = 400;
+    throw error;
+  }
+  const result = await userRepository.readUserInfo(userId);
+  return result;
+}

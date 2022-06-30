@@ -28,11 +28,37 @@ export async function myPageLikeController(req, res) {
   const resData = await myPageService.getWishRooms({
     page,
     count,
-    id,
+    id: 1,
     getImageAll,
   });
 
   return res.status(200).json(resData);
 }
 
-export function myPageBookingController(req, res) {}
+export async function myPageBookingController(req, res) {
+  try {
+    const page = req.query.page ? req.query.page : 1; // 받아오고 싶은 페이지
+    const count = req.query.count ? req.query.count : 5; // 페이지당 객체 개수
+    const getImageAll = req.query.getImageAll ? req.query.getImageAll : 1; // 객체 전체사진 조회 여부
+    const id = req.userId; // 유저 고유 키
+    const resData = await myPageService.getBookingRooms({
+      page,
+      count,
+      id: 1,
+      getImageAll,
+    });
+
+    return res.status(200).json(resData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function mypageHeaderController(req, res) {
+  try {
+    const data = await myPageService.getHeader(req.query.id);
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
+}
