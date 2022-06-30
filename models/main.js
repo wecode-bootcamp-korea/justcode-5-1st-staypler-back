@@ -35,7 +35,6 @@ LEFT JOIN (SELECT
                    ON rooms.id = room_type.rooms_id
            GROUP BY rooms.id) r
 ON recommend_to_user.rooms_id = r.id`;
-
   return recommendList;
 }
 

@@ -17,4 +17,5 @@ router.get('/:id/room', roomController.roomsRoomController);
 router.get('/:id', roomController.roomsDetailController);
 router.post('/:id/like', validateToken, roomController.roomsLikeController);
 
+
 export default router;
