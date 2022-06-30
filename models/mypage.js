@@ -9,8 +9,9 @@ export async function readMyPage(userId) {
 
 export async function updateInfo(userInfo) {
   const result = await prismaClient.$queryRaw`
-  UPDATE users SET name=${userInfo.name},phone=${userInfo.phone},profile_image_url=${userInfo.profile_image} WHERE id=${userInfo.userId}
+  UPDATE users SET name=${userInfo.name},phone=${userInfo.phone_number},profile_image_url=${userInfo.profile_image} WHERE id=${userInfo.userId}
   `;
+
   return result;
 }
 

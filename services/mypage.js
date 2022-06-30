@@ -20,7 +20,7 @@ export const updatePassword = async (
   const userPassword = await userRepository.getUserPasswordbyId(userId);
   const check = await bcrypt.compare(password, userPassword[0].password);
   const salt = await bcrypt.genSalt();
-
+  console.log(password, newPassword, confirmNewPassword);
   if (!check) {
     const error = new Error('비밀번호가 틀렸습니다.');
     error.statusCode = 400;

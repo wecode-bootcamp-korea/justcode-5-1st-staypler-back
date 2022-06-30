@@ -2,7 +2,7 @@ import * as myPageService from '../services/mypage.js';
 
 export async function myPageController(req, res) {
   try {
-    const data = await myPageService.getMyPage(1);
+    const data = await myPageService.getMyPage(req.userId);
     res.status(200).json({ data });
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
@@ -49,7 +49,7 @@ export async function myPageLikeController(req, res) {
   const resData = await myPageService.getWishRooms({
     page,
     count,
-    id: 1,
+    id,
     getImageAll,
   });
 
