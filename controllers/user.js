@@ -30,7 +30,6 @@ export const signupController = async (req, res) => {
 export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const token = await userService.logIn(email, password);
 
     return res.status(201).json({

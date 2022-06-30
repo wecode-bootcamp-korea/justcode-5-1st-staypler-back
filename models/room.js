@@ -117,7 +117,7 @@ rooms.address
 FROM (SELECT id, title, concept, address, province, city FROM rooms GROUP BY id) rooms
 JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN rooms_image.image END)  images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
 ON rooms.id = ri.rooms_id
-LEFT JOIN (SELECT room_type.rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',room_type.title,'type',room_type.type,'price',room_type.price,'image',rti.image) END) room FROM room_type JOIN (SELECT id,room_type_id,image FROM room_type_image GROUP BY room_type_image.room_type_id ORDER BY room_type_id) rti ON rti.room_type_id=room_type.id ${generateJoinStatement(
+LEFT JOIN (SELECT room_type.rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',room_type.title,'type',room_type.type,'price',room_type.price,'image',rti.image,'max_limit',max_limit,'min_limit',min_limit) END) room FROM room_type JOIN (SELECT id,room_type_id,image FROM room_type_image GROUP BY room_type_image.room_type_id ORDER BY room_type_id) rti ON rti.room_type_id=room_type.id ${generateJoinStatement(
     date
   )} GROUP BY room_type.rooms_id) rt
 ON rt.rooms_id = rooms.id

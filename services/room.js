@@ -1,6 +1,6 @@
 import * as roomRepositroy from '../models/room.js';
 
-export async function getRooms(id, query) {
+export async function getRooms(userId, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
 
   const page = parseInt(query.page) - 1;
@@ -16,7 +16,7 @@ export async function getRooms(id, query) {
   const sortKeyword = query.sort;
 
   const [rooms, roomsCnt] = await roomRepositroy.readAll(
-    id,
+    userId,
     date,
     keyword,
     filter,
