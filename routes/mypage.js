@@ -4,7 +4,7 @@ import { validateToken } from '../middleware/authorization.js';
 
 const router = express.Router();
 
-router.use(validateToken);
+// router.use(validateToken);
 
 router.get('/', myPageController.myPageController);
 router.put('/', myPageController.myPageUpdateController);

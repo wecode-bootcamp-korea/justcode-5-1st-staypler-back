@@ -54,7 +54,7 @@ export async function readRoomsImages(roomid) {
 
 export async function readBookingRooms(userId, page, count, getImageAll) {
   const bookingRoomList = await prismaClient.$queryRawUnsafe(`
-  SELECT r.rooms_id id,r.title name, reservation.start_date, reservation.end_date ${
+  SELECT r.rooms_id id,r.title rooms_name, reservation.start_date, reservation.end_date,r.max_limit,r.min_limit,r.max_price,r.min_price,r.province,r.city ${
     getImageAll
       ? `,(SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image`
       : ``
@@ -62,7 +62,7 @@ export async function readBookingRooms(userId, page, count, getImageAll) {
 FROM reservation
 JOIN (SELECT id FROM users WHERE id=${userId}) users
 ON users.id = reservation.user_id
-JOIN (SELECT rooms.title,room_type.id, rooms.id rooms_id FROM room_type LEFT JOIN rooms ON room_type.rooms_id = rooms.id) r
+JOIN (SELECT rooms.title,room_type.id, rooms.id rooms_id, MAX(max_limit) max_limit, MIN(min_limit) min_limit, MAX(price) max_price, MIN(price) min_price, rooms.province, rooms.city FROM room_type LEFT JOIN rooms ON room_type.rooms_id = rooms.id) r
 ON reservation.room_type_id = r.id
 ORDER BY reservation.start_date DESC
 LIMIT ${count} OFFSET ${(page - 1) * count}
