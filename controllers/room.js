@@ -1,8 +1,16 @@
 import * as roomService from '../services/room.js';
-
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+dotenv.config();
 export async function roomsController(req, res) {
   try {
-    const [rooms, roomsCnt] = await roomService.getRooms(req.userId, req.query);
+    const authHeader = req.get('Authorization') || '';
+    const token = authHeader ? authHeader.split(' ')[1] : '';
+    const data = token ? jwt.verify(token, process.env.SECRET_KEY) : '';
+    const [rooms, roomsCnt] = await roomService.getRooms(
+      data.id ? data.id : '',
+      req.query
+    );
     res.status(200).json({ data: rooms, rooms_count: roomsCnt });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -11,7 +19,10 @@ export async function roomsController(req, res) {
 
 export async function roomsDetailController(req, res) {
   try {
-    const result = await roomService.getRoomsById(req.userId, req.params.id, {
+    const authHeader = req.get('Authorization');
+    const token = authHeader.split(' ')[1];
+    const data = jwt.verify(token, process.env.SECRET_KEY);
+    const result = await roomService.getRoomsById(data.id, req.params.id, {
       start_date: req.query.start_date,
       end_date: req.query.end_date,
     });
