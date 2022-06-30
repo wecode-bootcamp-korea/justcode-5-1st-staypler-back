@@ -31,6 +31,31 @@ export const updatePassword = async (
   return await userRepository.updatePassword(userId, encryptPw);
 };
 
-export function getWishRooms(id) {}
+export async function getWishRooms({ id, page, count, getImageAll }) {
+  const maxPage = await myPageRepository.readWishRoomsCount(id);
+  const data = await myPageRepository.readWishRooms(id, page, count);
+
+  if (getImageAll === '1') {
+    for (let i = 0; i < data.length; i++) {
+      delete data[i].concept;
+      delete data[i].type;
+      delete data[i].address;
+      delete data[i].check_in_time;
+      delete data[i].check_out_time;
+      delete data[i].user_id;
+      delete data[i].isLike;
+      delete data[i].created_at;
+      delete data[i].updated_at;
+
+      data[i].image = await myPageRepository.readRoomsImages(data[i].id);
+      data[i].image = data[i].image.map(image => image.image);
+    }
+  }
+
+  return {
+    data,
+    maxPage: Math.ceil(maxPage[0].cnt / count),
+  };
+}
 
 export function getBookingRooms(id) {}

@@ -20,6 +20,19 @@ export const updatePassword = async (req, res) => {
   }
 };
 
-export function myPageLikeController(req, res) {}
+export async function myPageLikeController(req, res) {
+  const page = req.query.page ? req.query.page : 1; // 받아오고 싶은 페이지
+  const count = req.query.count ? req.query.count : 5; // 페이지당 객체 개수
+  const getImageAll = req.query.getImageAll ? req.query.getImageAll : 1; // 객체 전체사진 조회 여부
+  const id = req.userId; // 유저 고유 키
+  const resData = await myPageService.getWishRooms({
+    page,
+    count,
+    id,
+    getImageAll,
+  });
+
+  return res.status(200).json(resData);
+}
 
 export function myPageBookingController(req, res) {}
