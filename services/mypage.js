@@ -4,7 +4,9 @@ import bcrypt from 'bcrypt';
 
 export function getMyPage(id) {}
 
-export function updateMyPage(id, user) {}
+export async function updateMyPage(userInfo) {
+  return await myPageRepository.updateInfo(userInfo);
+}
 
 export const updatePassword = async (
   userId,

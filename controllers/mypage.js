@@ -2,7 +2,21 @@ import * as myPageService from '../services/mypage.js';
 
 export function myPageController(req, res) {}
 
-export function myPageUpdateController(req, res) {}
+export async function myPageUpdateController(req, res) {
+  try {
+    const { name, phone_number, password, profile_image } = req.body;
+    const userId = req.userId;
+    await myPageService.updateMyPage({
+      userId,
+      name,
+      phone_number,
+      profile_image,
+    });
+    res.status(200).json({ message: '성공!' });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
+}
 
 export const updatePassword = async (req, res) => {
   try {

@@ -2,7 +2,12 @@ import prismaClient from './prisma-client.js';
 
 export async function readMyPage(id) {}
 
-export async function updateInfo(id, user) {}
+export async function updateInfo(userInfo) {
+  const result = await prismaClient.$queryRaw`
+  UPDATE users SET name=${userInfo.name},phone=${userInfo.phone},profile_image_url=${userInfo.profile_image} WHERE id=${userInfo.userId}
+  `;
+  return result;
+}
 
 export async function readWishRooms(id, page, count, getImageAll) {
   const wishRoomList = await prismaClient.$queryRawUnsafe(`
@@ -33,12 +38,14 @@ export async function readWishRoomsCount(id) {
 
 export async function readBookingRoomsCount(userId) {
   const bookingRoomCount = await prismaClient.$queryRaw`
-  SELECT count(*) cnt FROM (SELECT r.title name, reservation.start_date, reservation.end_date, (SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image
+  SELECT COUNT(*) cnt FROM (SELECT rooms.id,rooms.title name, reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price,(SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image
 FROM reservation
 JOIN (SELECT id FROM users WHERE id=${userId}) users
 ON users.id = reservation.user_id
-JOIN (SELECT rooms.title,room_type.id, rooms.id rooms_id FROM room_type LEFT JOIN rooms ON room_type.rooms_id = rooms.id) r
+JOIN (SELECT room_type.rooms_id, room_type.id, max_limit, min_limit,price FROM room_type) r
 ON reservation.room_type_id = r.id
+JOIN rooms
+ON r.rooms_id = rooms.id
 ORDER BY reservation.start_date DESC) r;
   `;
 
@@ -54,7 +61,7 @@ export async function readRoomsImages(roomid) {
 
 export async function readBookingRooms(userId, page, count, getImageAll) {
   const bookingRoomList = await prismaClient.$queryRawUnsafe(`
-  SELECT r.rooms_id id,r.title rooms_name, reservation.start_date, reservation.end_date,r.max_limit,r.min_limit,r.max_price,r.min_price,r.province,r.city ${
+  SELECT rooms.id,rooms.title name, reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price max_price, r.price min_price ${
     getImageAll
       ? `,(SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image`
       : ``
@@ -62,8 +69,10 @@ export async function readBookingRooms(userId, page, count, getImageAll) {
 FROM reservation
 JOIN (SELECT id FROM users WHERE id=${userId}) users
 ON users.id = reservation.user_id
-JOIN (SELECT rooms.title,room_type.id, rooms.id rooms_id, MAX(max_limit) max_limit, MIN(min_limit) min_limit, MAX(price) max_price, MIN(price) min_price, rooms.province, rooms.city FROM room_type LEFT JOIN rooms ON room_type.rooms_id = rooms.id) r
+JOIN (SELECT room_type.rooms_id, room_type.id, max_limit, min_limit,price FROM room_type) r
 ON reservation.room_type_id = r.id
+JOIN rooms
+ON r.rooms_id = rooms.id
 ORDER BY reservation.start_date DESC
 LIMIT ${count} OFFSET ${(page - 1) * count}
   `);
