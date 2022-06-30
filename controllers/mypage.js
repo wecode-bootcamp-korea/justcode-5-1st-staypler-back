@@ -1,10 +1,17 @@
 import * as myPageService from '../services/mypage.js';
 
-export function myPageController(req, res) {}
+export async function myPageController(req, res) {
+  try {
+    const data = await myPageService.getMyPage(1);
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
+}
 
 export async function myPageUpdateController(req, res) {
   try {
-    const { name, phone_number, password, profile_image } = req.body;
+    const { name, phone_number, profile_image } = req.body;
     const userId = req.userId;
     await myPageService.updateMyPage({
       userId,
@@ -58,7 +65,7 @@ export async function myPageBookingController(req, res) {
     const resData = await myPageService.getBookingRooms({
       page,
       count,
-      id: 1,
+      id,
       getImageAll,
     });
 

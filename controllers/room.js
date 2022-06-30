@@ -2,7 +2,7 @@ import * as roomService from '../services/room.js';
 
 export async function roomsController(req, res) {
   try {
-    const [rooms, roomsCnt] = await roomService.getRooms(null, req.query);
+    const [rooms, roomsCnt] = await roomService.getRooms(req.userId, req.query);
     res.status(200).json({ data: rooms, rooms_count: roomsCnt });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -11,7 +11,7 @@ export async function roomsController(req, res) {
 
 export async function roomsDetailController(req, res) {
   try {
-    const result = await roomService.getRoomsById(null, req.params.id, {
+    const result = await roomService.getRoomsById(req.userId, req.params.id, {
       start_date: req.query.start_date,
       end_date: req.query.end_date,
     });
@@ -45,10 +45,14 @@ export async function roomsRoomController(req, res) {
 
 export async function roomsBookingInfoController(req, res) {
   try {
-    const data = await roomService.getBookingInfoOfRooms(req.query.room_id, 2, {
-      start_date: req.query.start_date,
-      end_date: req.query.end_date,
-    });
+    const data = await roomService.getBookingInfoOfRooms(
+      req.query.room_id,
+      req.userId,
+      {
+        start_date: req.query.start_date,
+        end_date: req.query.end_date,
+      }
+    );
     res.status(200).json({ data });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,7 +63,7 @@ export async function roomsPaymentController(req, res) {
   const { name, phone_number, email, number, start_date, end_date } = req.body;
   const room_id = req.query.room_id;
   try {
-    await roomService.paymentOfBooking(1, room_id, {
+    await roomService.paymentOfBooking(req.userId, room_id, {
       name,
       phone_number,
       email,

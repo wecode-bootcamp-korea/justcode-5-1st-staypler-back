@@ -1,6 +1,11 @@
 import prismaClient from './prisma-client.js';
 
-export async function readMyPage(id) {}
+export async function readMyPage(userId) {
+  const result = await prismaClient.$queryRaw`
+  SELECT email,phone,name,profile_image_url FROM users WHERE id=${userId};
+  `;
+  return result;
+}
 
 export async function updateInfo(userInfo) {
   const result = await prismaClient.$queryRaw`
@@ -61,7 +66,7 @@ export async function readRoomsImages(roomid) {
 
 export async function readBookingRooms(userId, page, count, getImageAll) {
   const bookingRoomList = await prismaClient.$queryRawUnsafe(`
-  SELECT rooms.id,rooms.title name, reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price max_price, r.price min_price ${
+  SELECT rooms.id,rooms.title rooms_name,rooms.province,rooms.city ,reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price max_price, r.price min_price ${
     getImageAll
       ? `,(SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image`
       : ``

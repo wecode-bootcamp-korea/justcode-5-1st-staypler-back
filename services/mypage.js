@@ -2,7 +2,10 @@ import * as userRepository from '../models/user.js';
 import * as myPageRepository from '../models/mypage.js';
 import bcrypt from 'bcrypt';
 
-export function getMyPage(id) {}
+export async function getMyPage(id) {
+  const userInfo = await myPageRepository.readMyPage(id);
+  return userInfo;
+}
 
 export async function updateMyPage(userInfo) {
   return await myPageRepository.updateInfo(userInfo);
