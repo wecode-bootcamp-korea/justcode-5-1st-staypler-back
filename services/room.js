@@ -2,7 +2,6 @@ import * as roomRepositroy from '../models/room.js';
 
 export async function getRooms(userId, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
-
   const page = parseInt(query.page) - 1;
   const keyword = query.search;
   const filter = {
@@ -31,7 +30,9 @@ export async function getRooms(userId, query) {
 }
 
 export async function getRoomsById(userId, roomsId, date) {
+  console.log(userId, roomsId, date);
   const check = await roomRepositroy.checkId(roomsId);
+  console.log(check);
   if (!check.length) {
     const error = new Error('해당 페이지가 존재하지 않습니다.');
     error.statusCode = 404;
