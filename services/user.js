@@ -74,7 +74,7 @@ export const logIn = async (email, password) => {
 
   //비밀번호 확인
   const loginTryUser_Password = await userRepository.passwordIsCorrect(email);
-  const pwIsCorrect = bcrypt.compareSync(
+  const pwIsCorrect = await bcrypt.compare(
     password,
     loginTryUser_Password[0].password
   );

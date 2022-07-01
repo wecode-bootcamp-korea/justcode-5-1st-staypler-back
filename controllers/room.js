@@ -47,7 +47,6 @@ export async function roomsRoomController(req, res) {
       start_date: req.query.start_date,
       end_date: req.query.end_date,
     });
-
     res.status(200).json({ data });
   } catch (error) {
     res.status(500).json({ message: error.message });
