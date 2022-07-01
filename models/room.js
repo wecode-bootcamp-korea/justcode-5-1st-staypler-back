@@ -16,7 +16,7 @@ export async function readAll(id, date, keyword, filter, sortKeyword, page) {
   MIN(room_type.price) min_price,
   theme.name theme
 FROM rooms
-LEFT JOIN (SELECT rooms_image.rooms_id, JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN JSON_OBJECT('id', rooms_image.id, 'url',rooms_image.image) END) images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
+LEFT JOIN (SELECT rooms_image.rooms_id, JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL THEN rooms_image.image END) images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
 ON rooms.id = ri.rooms_id
 ${
   id
@@ -30,7 +30,7 @@ LEFT JOIN (SELECT rooms_id, theme.name FROM theme JOIN rooms_theme on theme.id =
 ON theme.rooms_id = rooms.id
 LEFT JOIN reservation on room_type.id = reservation.room_type_id
 ${keyword ? `WHERE rooms.title LIKE '%${keyword}%'` : ``}
-GROUP BY rooms.id${id ? `, islike` : ``}
+GROUP BY rooms.id, theme ${id ? `, islike` : ``}
 ${generateHavingStatement(filter)}
 ${generateOrderByStatemnet(sortKeyword)}
 `;
@@ -103,36 +103,36 @@ export async function checkId(roomId) {
 
 export async function readById(userId, roomId, date) {
   const roomInfo = prismaClient.$queryRawUnsafe(`SELECT
-rooms.title room_name,
-rooms.province,
-rooms.city,
-rooms.concept,
-ri.images,
-rt.room,
-rs.specials,
-JSON_OBJECT('id',rooms_intro.id,'title ',rooms_intro.title, 'main_content',rooms_intro.main_content,'sub_content',rooms_intro.sub_content) intro,
-${userId ? `IFNULL(rooms_like.isLike,0) islike,` : ``}
-rooms.address
-
-FROM (SELECT id, title, concept, address, province, city FROM rooms GROUP BY id) rooms
-JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN rooms_image.image END)  images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
-ON rooms.id = ri.rooms_id
-LEFT JOIN (SELECT room_type.rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',room_type.title,'type',room_type.type,'price',room_type.price,'image',rti.image,'max_limit',max_limit,'min_limit',min_limit) END) room FROM room_type JOIN (SELECT id,room_type_id,image FROM room_type_image GROUP BY room_type_image.room_type_id ORDER BY room_type_id) rti ON rti.room_type_id=room_type.id ${generateJoinStatement(
+  rooms.title room_name,
+  rooms.province,
+  rooms.city,
+  rooms.concept,
+  rt.room,
+  ri.images,
+  rs.specials,
+  JSON_OBJECT('id',rooms_intro.id,'title ',rooms_intro.title, 'main_content',rooms_intro.main_content,'sub_content',rooms_intro.sub_content) intro,
+  ${userId ? `IFNULL(rooms_like.isLike,0) islike,` : ``}
+  rooms.address
+  
+  FROM (SELECT id, title, concept, address, province, city FROM rooms GROUP BY id) rooms
+  LEFT JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN rooms_image.image END)  images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
+  ON rooms.id = ri.rooms_id
+  LEFT JOIN (SELECT room_type.rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',room_type.title,'type',room_type.type,'price',room_type.price,'image',rti.image,'max_limit',max_limit,'min_limit',min_limit) END) room FROM room_type LEFT JOIN (SELECT room_type_id,image FROM room_type_image GROUP BY id ORDER BY room_type_id limit 1) rti ON rti.room_type_id=room_type.id ${generateJoinStatement(
     date
   )} GROUP BY room_type.rooms_id) rt
-ON rt.rooms_id = rooms.id
-${
-  userId
-    ? `LEFT JOIN (SELECT id,rooms_id, isLike FROM likes WHERE user_id=${userId} ) as rooms_like
-ON rooms_like.rooms_id = rooms.id`
-    : ``
-}
-JOIN rooms_intro
-ON rooms.id = rooms_intro.rooms_id
-JOIN (SELECT rooms_special.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_special.id IS NOT NULL THEN JSON_OBJECT('id',rooms_special.id,'title',rooms_special.title,'content',rooms_special.content,'image',rooms_special.image) END) specials FROM rooms_special GROUP BY rooms_special.rooms_id) rs
-ON rooms.id = rs.rooms_id
-WHERE rooms.id=${roomId}
-GROUP BY rooms.id`);
+  ON rt.rooms_id = rooms.id
+  ${
+    userId
+      ? `LEFT JOIN (SELECT id,rooms_id, isLike FROM likes WHERE user_id=${userId} GROUP BY id) as rooms_like
+  ON rooms_like.rooms_id = rooms.id`
+      : ``
+  }
+  JOIN (SELECT id,rooms_id,title,main_content,sub_content FROM rooms_intro GROUP BY id) rooms_intro
+  ON rooms.id = rooms_intro.rooms_id
+  JOIN (SELECT rooms_special.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_special.id IS NOT NULL THEN JSON_OBJECT('id',rooms_special.id,'title',rooms_special.title,'content',rooms_special.content,'image',rooms_special.image) END) specials FROM rooms_special GROUP BY rooms_special.rooms_id) rs
+  ON rooms.id = rs.rooms_id
+  WHERE rooms.id=${roomId}
+  GROUP BY rooms.id, rooms_intro.id ${userId ? `, rooms_like.id` : ``}`);
 
   return roomInfo;
 }
@@ -167,26 +167,25 @@ export async function checkLike(userId, roomId) {
 }
 
 export async function readRoomById(id, date) {
-  const room = await prismaClient.$queryRawUnsafe(`
-    SELECT reservations.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
+  const room =
+    await prismaClient.$queryRawUnsafe(`SELECT reservations.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
       date.start_date && date.end_date
         ? `TIMESTAMPDIFF(DAY ,'${date.start_date}','${date.end_date}') * room_type.price total_price,`
         : ``
     } room_type.min_limit, room_type.max_limit
-FROM room_type
-LEFT JOIN (SELECT room_type_image.id,room_type_image.room_type_id,JSON_ARRAYAGG(CASE WHEN room_type_image.id IS NOT NULL THEN room_type_image.image END ) images FROM room_type_image GROUP BY room_type_image.room_type_id) rti
-ON rti.room_type_id = room_type.id
-JOIN (SELECT room_type.id
-FROM room_type
-LEFT JOIN reservation
-ON reservation.room_type_id = room_type.id
-${generateWhereStatement(date)}) reservations
-ON reservations.id = room_type.id
-LEFT JOIN (SELECT room_type_id FROM reservation GROUP BY room_type_id) reservation 
-ON room_type.id = reservation.room_type_id
-WHERE reservations.id =${id}
-GROUP BY reservations.id`);
-
+  FROM room_type
+  LEFT JOIN (SELECT room_type_image.room_type_id,JSON_ARRAYAGG(CASE WHEN room_type_image.id IS NOT NULL THEN room_type_image.image END ) images FROM room_type_image GROUP BY room_type_image.room_type_id) rti
+  ON rti.room_type_id = room_type.id
+  JOIN (SELECT room_type.id
+  FROM room_type
+  LEFT JOIN reservation
+  ON reservation.room_type_id = room_type.id
+  ${generateWhereStatement(date)}) reservations
+  ON reservations.id = room_type.id
+  LEFT JOIN (SELECT room_type_id FROM reservation GROUP BY room_type_id) reservation
+  ON room_type.id = reservation.room_type_id
+  WHERE reservations.id =${id}
+  GROUP BY reservations.id,rti.images`);
   return room;
 }
 

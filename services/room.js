@@ -25,7 +25,7 @@ export async function getRooms(userId, query) {
   );
 
   const result = rooms.map(room => {
-    return { ...room, images: rooms.images ? room.images.filter(Boolean) : [] };
+    return { ...room, images: room.images.filter(Boolean) };
   });
   return [result, roomsCnt[0].total_rows];
 }
