@@ -30,7 +30,9 @@ export async function getRooms(userId, query) {
 }
 
 export async function getRoomsById(userId, roomsId, date) {
+  console.log(userId, roomsId, date);
   const check = await roomRepositroy.checkId(roomsId);
+  console.log(check);
   if (!check.length) {
     const error = new Error('해당 페이지가 존재하지 않습니다.');
     error.statusCode = 404;
