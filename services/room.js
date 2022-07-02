@@ -67,6 +67,17 @@ export async function getRoomOfRooms(id, date) {
 
 export async function getBookingInfoOfRooms(id, userId, date) {
   const check = await roomRepositroy.roomCheck(id);
+  const duplicateCheck = await roomRepositroy.checkReservation(
+    id,
+    date.start_date,
+    date.end_date
+  );
+
+  if (!!duplicateCheck.length) {
+    const error = new Error('해당 날짜는 예약이 마감되었습니다.');
+    error.statusCode = 400;
+    throw error;
+  }
   if (!!check.length) {
     const data = await roomRepositroy.readBookingInfo(id, userId, date);
     return data;
