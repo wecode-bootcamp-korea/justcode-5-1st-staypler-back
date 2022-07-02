@@ -220,17 +220,14 @@ WHERE room_type.id=${id}`);
 }
 
 export async function checkReservation(room_id, start_date, end_date) {
-  const check = prismaClient.$queryRawUnsafe(`SELECT room_type.id
-FROM room_type
-LEFT JOIN reservation
-ON reservation.room_type_id = room_type.id
-WHERE reservation.start_date
-BETWEEN '${start_date}' AND '${end_date}'
-AND reservation.end_date
-BETWEEN '${start_date}' AND '${end_date}'
-OR reservation.start_date IS NULL AND reservation.end_date IS NULL
-GROUP BY room_type.id
-HAVING room_type.id = ${room_id}`);
+  const check =
+    prismaClient.$queryRawUnsafe(`SELECT room_type.id, room_type.title, reservation.start_date, reservation.end_date
+    FROM room_type
+    LEFT JOIN reservation
+    ON reservation.room_type_id = room_type.id
+    WHERE  ( '${start_date}' < reservation.end_date ) AND ( reservation.start_date < '${end_date}' )
+    HAVING room_type.id = ${room_id}`);
+
   return check;
 }
 
