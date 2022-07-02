@@ -6,9 +6,8 @@ export async function roomsController(req, res) {
   try {
     const authHeader = req.get('Authorization') || '';
     const token = authHeader ? authHeader.split(' ')[1] : '';
-
     const [rooms, roomsCnt] = await roomService.getRooms(
-      !(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      !!token ? jwt.verify(token, process.env.SECRET_KEY).id : '',
       req.query
     );
     res.status(200).json({ data: rooms, rooms_count: roomsCnt });
@@ -19,10 +18,10 @@ export async function roomsController(req, res) {
 
 export async function roomsDetailController(req, res) {
   try {
-    const authHeader = req.get('Authorization');
-    const token = authHeader.split(' ')[1];
+    const authHeader = req.get('Authorization') || '';
+    const token = authHeader ? authHeader.split(' ')[1] : '';
     const result = await roomService.getRoomsById(
-      !(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      !!token ? jwt.verify(token, process.env.SECRET_KEY).id : '',
       req.params.id,
       {
         start_date: req.query.start_date,
