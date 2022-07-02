@@ -77,7 +77,7 @@ export async function myPageBookingController(req, res) {
 
 export async function mypageHeaderController(req, res) {
   try {
-    const data = await myPageService.getHeader(req.query.id);
+    const data = await myPageService.getHeader(req.userId);
     res.status(200).json({ data });
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
