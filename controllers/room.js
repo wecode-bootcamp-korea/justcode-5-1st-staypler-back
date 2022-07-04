@@ -6,9 +6,8 @@ export async function roomsController(req, res) {
   try {
     const authHeader = req.get('Authorization') || '';
     const token = authHeader ? authHeader.split(' ')[1] : '';
-    const data = token ? jwt.verify(token, process.env.SECRET_KEY) : '';
     const [rooms, roomsCnt] = await roomService.getRooms(
-      data.id ? data.id : '',
+      !!token ? jwt.verify(token, process.env.SECRET_KEY).id : '',
       req.query
     );
     res.status(200).json({ data: rooms, rooms_count: roomsCnt });
@@ -21,11 +20,14 @@ export async function roomsDetailController(req, res) {
   try {
     const authHeader = req.get('Authorization') || '';
     const token = authHeader ? authHeader.split(' ')[1] : '';
-    const data = token ? jwt.verify(token, process.env.SECRET_KEY) : '';
-    const result = await roomService.getRoomsById(data.id, req.params.id, {
-      start_date: req.query.start_date,
-      end_date: req.query.end_date,
-    });
+    const result = await roomService.getRoomsById(
+      !!token ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      req.params.id,
+      {
+        start_date: req.query.start_date,
+        end_date: req.query.end_date,
+      }
+    );
     res.status(200).json({ data: result });
   } catch (error) {
     res.status(error.statusCode || 400).json({ message: error.message });
