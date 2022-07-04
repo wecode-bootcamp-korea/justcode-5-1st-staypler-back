@@ -1,6 +1,6 @@
 # 🏡Staypler[BackEnd]
 
-<img width="1042" height="200" alt="StayPler_intro" src="https://user-images.githubusercontent.com/65072611/177008729-07c69843-aebd-49af-9e59-88d513f80c30.png">
+<img width="1042" height="400" alt="StayPler_intro" src="https://user-images.githubusercontent.com/65072611/177008729-07c69843-aebd-49af-9e59-88d513f80c30.png">
 
 ## ✏️Description
 
@@ -9,11 +9,11 @@ Stayfolio 주소 : https://www.stayfolio.com/
 
 ## 🔥 Members
 
-- 김지현 [기술블로그](),[Git]()
-- 김신혜 [기술블로그](),[Git]()
-- 박종원 [기술블로그](),[Git]()
-- 이수현 [기술블로그](https://velog.io/@lshyun955),[Git](https://github.com/lshyun955)
-- 장태준 [기술블로그](),[Git]()
+- 김지현 [기술블로그](https://jihyeon-kimy.tistory.com/), [Git](https://github.com/jihyeon-kimy)
+- 김신혜 [기술블로그](https://cindylog.tistory.com/), [Git](https://github.com/cciindy)
+- 박종원 [기술블로그](https://velog.io/@carryy333), [Git](https://github.com/mulnon2g)
+- 이수현 [기술블로그](https://velog.io/@lshyun955), [Git](https://github.com/lshyun955)
+- 장태준 [기술블로그](https://velog.io/@taja0903), [Git](https://github.com/Jun0903)
 
 ## 📢 Introduction
 
