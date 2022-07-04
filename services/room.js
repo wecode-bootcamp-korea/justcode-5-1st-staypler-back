@@ -36,7 +36,14 @@ export async function getRoomsById(userId, roomsId, date) {
     error.statusCode = 404;
     throw error;
   } else {
-    return await roomRepositroy.readById(userId, roomsId, date);
+    const rooms = await roomRepositroy.readById(userId, roomsId);
+    const roomsImage = await roomRepositroy.roomOfreadById(date, roomsId);
+    if (roomsImage.length) {
+      rooms[0].room = roomsImage[0].room;
+      return rooms;
+    } else {
+      return rooms;
+    }
   }
 }
 
