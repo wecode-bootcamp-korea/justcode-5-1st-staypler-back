@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "nodemon server.js",
-    "distribute": "npm i && prisma generate && pm2 start server.js --name <project-back> -i max"
+    "distribute": "npm i && prisma generate && pm2 start server.js --name staypler-ec2-back-1 -i max"
   },
   "author": "",
   "license": "ISC",
