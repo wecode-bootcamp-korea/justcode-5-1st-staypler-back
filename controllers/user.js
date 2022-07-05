@@ -9,9 +9,12 @@ export const signUp = async (req, res) => {
     await userService.signUp(email, username, password, phoneNumber);
     return res.status(201).json({
       message: 'SIGNUP_SUCCESS',
+      status: 201,
     });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ message: err.message });
+    return res
+      .status(err.statusCode || 500)
+      .json({ message: err.message, status: err.statusCode });
   }
 };
 
@@ -27,7 +30,9 @@ export const login = async (req, res) => {
       token: token,
     });
   } catch (err) {
-    return res.status(err.statusCode || 500).json({ message: err.message });
+    return res
+      .status(err.statusCode || 500)
+      .json({ message: err.message, status: err.statusCode });
   }
 };
 
