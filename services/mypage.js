@@ -2,13 +2,13 @@ import * as userRepository from '../models/user.js';
 import * as myPageRepository from '../models/mypage.js';
 import bcrypt from 'bcrypt';
 
-export async function getMyPage(id) {
-  const userInfo = await myPageRepository.readMyPage(id);
+export async function getMyPage(userId) {
+  const userInfo = await myPageRepository.readMyPage(userId);
   return userInfo;
 }
 
 export async function updateMyPage(userInfo) {
-  return await myPageRepository.updateInfo(userInfo);
+  return await myPageRepository.updateMyPage(userInfo);
 }
 
 export const updatePassword = async (
@@ -31,15 +31,15 @@ export const updatePassword = async (
     throw error;
   }
 
-  const encryptPw = await bcrypt.hash(newPassword, salt);
+  const encryptPassword = await bcrypt.hash(newPassword, salt);
 
-  return await userRepository.updatePassword(userId, encryptPw);
+  return await userRepository.updatePassword(userId, encryptPassword);
 };
 
-export async function getWishRooms({ id, page, count, getImageAll }) {
-  const maxPage = await myPageRepository.readWishRoomsCount(id);
-  const data = await myPageRepository.readWishRooms(
-    id,
+export async function getWishList({ userId, page, count, getImageAll }) {
+  const maxPage = await myPageRepository.readWishListRowCount(userId);
+  const data = await myPageRepository.readWishList(
+    userId,
     page,
     count,
     getImageAll
@@ -67,10 +67,10 @@ export async function getWishRooms({ id, page, count, getImageAll }) {
   };
 }
 
-export async function getBookingRooms({ id, page, count, getImageAll }) {
-  const maxPage = await myPageRepository.readBookingRoomsCount(id);
-  const data = await myPageRepository.readBookingRooms(
-    id,
+export async function getReservationList({ userId, page, count, getImageAll }) {
+  const maxPage = await myPageRepository.readReservationRowCount(userId);
+  const data = await myPageRepository.readReservationList(
+    userId,
     page,
     count,
     getImageAll
@@ -88,7 +88,7 @@ export async function getBookingRooms({ id, page, count, getImageAll }) {
 }
 
 export async function getHeader(userId) {
-  const [check] = await userRepository.getUserIdbyId(userId);
+  const [check] = await userRepository.getUserbyId(userId);
   if (!check) {
     const error = new Error('User Not Found');
     error.statusCode = 400;

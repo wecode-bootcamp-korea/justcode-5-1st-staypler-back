@@ -20,7 +20,7 @@ export const getUserIdByEmail = async email => {
         SELECT id FROM users WHERE email = ${email}`;
 };
 
-export const getUserIdbyId = async user_id => {
+export const getUserbyId = async user_id => {
   return await prisma.$queryRaw`
         SELECT id FROM users WHERE id=${user_id}`;
 };

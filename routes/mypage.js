@@ -6,11 +6,11 @@ const router = express.Router();
 
 router.use(validateToken);
 
-router.get('/', myPageController.myPageController);
-router.put('/', myPageController.myPageUpdateController);
-router.get('/header', myPageController.mypageHeaderController);
+router.get('/', myPageController.myPage);
+router.put('/', myPageController.updateMypage);
+router.get('/header', myPageController.mypageHeader);
 router.put('/password', myPageController.updatePassword);
-router.get('/like', myPageController.myPageLikeController);
-router.get('/bookings', myPageController.myPageBookingController);
+router.get('/like', myPageController.wishList);
+router.get('/bookings', myPageController.reservationList);
 
 export default router;

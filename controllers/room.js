@@ -2,11 +2,11 @@ import * as roomService from '../services/room.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 dotenv.config();
-export async function roomsController(req, res) {
+export async function accommodationList(req, res) {
   try {
     const authHeader = req.get('Authorization') || '';
     const token = authHeader ? authHeader.split(' ')[1] : '';
-    const [rooms, roomsCnt] = await roomService.getRooms(
+    const [rooms, roomsCnt] = await roomService.accommodationList(
       !!token ? jwt.verify(token, process.env.SECRET_KEY).id : '',
       req.query
     );
@@ -16,11 +16,11 @@ export async function roomsController(req, res) {
   }
 }
 
-export async function roomsDetailController(req, res) {
+export async function accommodationDetail(req, res) {
   try {
     const authHeader = req.get('Authorization') || '';
     const token = authHeader ? authHeader.split(' ')[1] : '';
-    const result = await roomService.getRoomsById(
+    const result = await roomService.accommodationById(
       !!token ? jwt.verify(token, process.env.SECRET_KEY).id : '',
       req.params.id,
       {
@@ -34,18 +34,21 @@ export async function roomsDetailController(req, res) {
   }
 }
 
-export async function roomsLikeController(req, res) {
+export async function accommodationLike(req, res) {
   try {
-    const result = await roomService.likeRooms(req.userId, req.params.id);
+    const result = await roomService.accommodationLike(
+      req.userId,
+      req.params.id
+    );
     res.status(200).json(result);
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
   }
 }
 
-export async function roomsRoomController(req, res) {
+export async function roomDetail(req, res) {
   try {
-    const data = await roomService.getRoomOfRooms(req.params.id, {
+    const data = await roomService.roomById(req.params.id, {
       start_date: req.query.start_date,
       end_date: req.query.end_date,
     });
@@ -55,9 +58,9 @@ export async function roomsRoomController(req, res) {
   }
 }
 
-export async function roomsBookingInfoController(req, res) {
+export async function reservationInfo(req, res) {
   try {
-    const data = await roomService.getBookingInfoOfRooms(
+    const data = await roomService.reservationInfo(
       req.query.room_id,
       req.userId,
       {
@@ -71,11 +74,11 @@ export async function roomsBookingInfoController(req, res) {
   }
 }
 
-export async function roomsPaymentController(req, res) {
+export async function payment(req, res) {
   const { name, phone_number, email, number, start_date, end_date } = req.body;
   const room_id = req.query.room_id;
   try {
-    await roomService.paymentOfBooking(req.userId, room_id, {
+    await roomService.payment(req.userId, room_id, {
       name,
       phone_number,
       email,

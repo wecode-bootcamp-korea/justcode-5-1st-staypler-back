@@ -1,6 +1,6 @@
 import * as myPageService from '../services/mypage.js';
 
-export async function myPageController(req, res) {
+export async function myPage(req, res) {
   try {
     const data = await myPageService.getMyPage(req.userId);
     res.status(200).json({ data });
@@ -9,7 +9,7 @@ export async function myPageController(req, res) {
   }
 }
 
-export async function myPageUpdateController(req, res) {
+export async function updateMypage(req, res) {
   try {
     const { name, phone_number, profile_image } = req.body;
     const userId = req.userId;
@@ -41,31 +41,31 @@ export const updatePassword = async (req, res) => {
   }
 };
 
-export async function myPageLikeController(req, res) {
+export async function wishList(req, res) {
   const page = req.query.page ? req.query.page : 1; // 받아오고 싶은 페이지
   const count = req.query.count ? req.query.count : 5; // 페이지당 객체 개수
   const getImageAll = req.query.getImageAll ? req.query.getImageAll : 1; // 객체 전체사진 조회 여부
-  const id = req.userId; // 유저 고유 키
-  const resData = await myPageService.getWishRooms({
+  const userId = req.userId; // 유저 고유 키
+  const resData = await myPageService.getWishList({
     page,
     count,
-    id,
+    userId,
     getImageAll,
   });
 
   return res.status(200).json(resData);
 }
 
-export async function myPageBookingController(req, res) {
+export async function reservationList(req, res) {
   try {
     const page = req.query.page ? req.query.page : 1; // 받아오고 싶은 페이지
     const count = req.query.count ? req.query.count : 5; // 페이지당 객체 개수
     const getImageAll = req.query.getImageAll ? req.query.getImageAll : 1; // 객체 전체사진 조회 여부
-    const id = req.userId; // 유저 고유 키
-    const resData = await myPageService.getBookingRooms({
+    const userId = req.userId; // 유저 고유 키
+    const resData = await myPageService.getReservationList({
       page,
       count,
-      id,
+      userId,
       getImageAll,
     });
 
@@ -75,7 +75,7 @@ export async function myPageBookingController(req, res) {
   }
 }
 
-export async function mypageHeaderController(req, res) {
+export async function mypageHeader(req, res) {
   try {
     const data = await myPageService.getHeader(req.userId);
     res.status(200).json({ data });
