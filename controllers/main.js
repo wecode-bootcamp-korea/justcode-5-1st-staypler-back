@@ -1,6 +1,6 @@
 import * as mainService from '../services/main.js';
 
-export async function promotionController(req, res) {
+export async function promotion(_, res) {
   try {
     const data = await mainService.getPromotionRooms();
     res.status(200).json({ data });
@@ -9,7 +9,7 @@ export async function promotionController(req, res) {
   }
 }
 
-export async function recommendController(req, res) {
+export async function recommend(_, res) {
   try {
     const data = await mainService.getRecommendRooms();
     res.status(200).json({ data });
@@ -18,7 +18,7 @@ export async function recommendController(req, res) {
   }
 }
 
-export async function bannerController(req, res) {
+export async function banner(_, res) {
   try {
     const data = await mainService.getBannerRooms();
     res.status(200).json({ data });

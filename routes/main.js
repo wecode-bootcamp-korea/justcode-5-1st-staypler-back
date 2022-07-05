@@ -3,8 +3,8 @@ import * as mainController from '../controllers/main.js';
 
 const router = express.Router();
 
-router.get('/promotion', mainController.promotionController);
-router.get('/recommend', mainController.recommendController);
-router.get('/banner', mainController.bannerController);
+router.get('/promotion', mainController.promotion);
+router.get('/recommend', mainController.recommend);
+router.get('/banner', mainController.banner);
 
 export default router;

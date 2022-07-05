@@ -4,17 +4,12 @@ import { validateToken } from '../middleware/authorization.js';
 
 const router = express.Router();
 
-router.get('/', roomController.roomsController);
+router.get('/', roomController.accommodationList);
 
-router.get(
-  '/room/bookings',
-  validateToken,
-  roomController.roomsBookingInfoController
-);
-router.get('/room', roomController.roomsRoomController);
-router.post('/payment', validateToken, roomController.roomsPaymentController);
-router.get('/:id/room', roomController.roomsRoomController);
-router.get('/:id', roomController.roomsDetailController);
-router.post('/:id/like', validateToken, roomController.roomsLikeController);
+router.get('/room/bookings', validateToken, roomController.reservationInfo);
+router.post('/payment', validateToken, roomController.payment);
+router.get('/:id/room', roomController.roomDetail);
+router.get('/:id', roomController.accommodationDetail);
+router.post('/:id/like', validateToken, roomController.accommodationLike);
 
 export default router;

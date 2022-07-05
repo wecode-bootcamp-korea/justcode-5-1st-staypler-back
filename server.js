@@ -10,7 +10,7 @@ import myPageRouter from './routes/mypage.js';
 
 dotenv.config();
 const corsOption = {
-  origin: '*',
+  origin: '13.125.168.193',
 };
 
 const app = express();
@@ -26,5 +26,5 @@ app.use('/mypage', myPageRouter);
 const server = http.createServer(app);
 const PORT = process.env.PORT || 10010;
 server.listen(PORT, () => {
-  console.log(`server start : http://localhost:${PORT}/`);
+  console.log(`server start : http://13.125.249.195:${PORT}/`);
 });

@@ -1,6 +1,6 @@
 import * as roomRepositroy from '../models/room.js';
 
-export async function getRooms(userId, query) {
+export async function accommodationList(userId, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
   const page = parseInt(query.page) - 1;
   const keyword = query.search;
@@ -14,7 +14,7 @@ export async function getRooms(userId, query) {
 
   const sortKeyword = query.sort;
 
-  const [rooms, roomsCnt] = await roomRepositroy.readAll(
+  const [accommodationList, accommodationCount] = await roomRepositroy.readAll(
     userId,
     date,
     keyword,
@@ -23,32 +23,32 @@ export async function getRooms(userId, query) {
     page
   );
 
-  const result = rooms.map(room => {
-    return { ...room, images: room.images.filter(Boolean) };
+  const result = accommodationList.map(accommodation => {
+    return { ...accommodation, images: accommodation.images.filter(Boolean) };
   });
-  return [result, roomsCnt[0].total_rows];
+  return [result, accommodationCount[0].total_rows];
 }
 
-export async function getRoomsById(userId, roomsId, date) {
+export async function accommodationById(userId, roomsId, date) {
   const check = await roomRepositroy.checkId(roomsId);
   if (!check.length) {
     const error = new Error('해당 페이지가 존재하지 않습니다.');
     error.statusCode = 404;
     throw error;
   } else {
-    const rooms = await roomRepositroy.readById(userId, roomsId);
-    const roomsImage = await roomRepositroy.roomOfreadById(date, roomsId);
-    if (roomsImage.length) {
-      rooms[0].room = roomsImage[0].room;
+    const accommodation = await roomRepositroy.readById(userId, roomsId);
+    const roomList = await roomRepositroy.roomImageById(date, roomsId);
+    if (roomList.length) {
+      accommodation[0].room = roomList[0].room;
       return rooms;
     } else {
-      rooms[0].room = [];
-      return rooms;
+      accommodation[0].room = [];
+      return accommodation;
     }
   }
 }
 
-export async function likeRooms(userId, roomId) {
+export async function accommodationLike(userId, roomId) {
   const check = await roomRepositroy.checkLike(userId, roomId);
   if (!check) {
     await roomRepositroy.createLike(userId, roomId);
@@ -59,10 +59,10 @@ export async function likeRooms(userId, roomId) {
   }
 }
 
-export async function getRoomOfRooms(id, date) {
+export async function roomById(id, date) {
   const check = await roomRepositroy.roomCheck(id);
   if (!!check.length) {
-    const result = await roomRepositroy.readRoomById(id, date);
+    const result = await roomRepositroy.roomById(id, date);
     return result;
   } else {
     const error = new Error('Page Not Found');
@@ -71,10 +71,10 @@ export async function getRoomOfRooms(id, date) {
   }
 }
 
-export async function getBookingInfoOfRooms(id, userId, date) {
-  const check = await roomRepositroy.roomCheck(id);
+export async function reservationInfo(roomTypeId, userId, date) {
+  const check = await roomRepositroy.roomCheck(roomTypeId);
   const duplicateCheck = await roomRepositroy.checkReservation(
-    id,
+    roomTypeId,
     date.start_date,
     date.end_date
   );
@@ -85,7 +85,7 @@ export async function getBookingInfoOfRooms(id, userId, date) {
     throw error;
   }
   if (!!check.length) {
-    const data = await roomRepositroy.readBookingInfo(id, userId, date);
+    const data = await roomRepositroy.readBookingInfo(roomTypeId, userId, date);
     return data;
   } else {
     const error = new Error('Page Not Found');
@@ -94,10 +94,10 @@ export async function getBookingInfoOfRooms(id, userId, date) {
   }
 }
 
-export async function paymentOfBooking(userId, roomId, bookingInfo) {
+export async function payment(userId, roomTypeId, bookingInfo) {
   // 해당 날짜에 예약이 가능한지 추가 확인을 한다.
   const check = await roomRepositroy.checkReservation(
-    roomId,
+    roomTypeId,
     bookingInfo.start_date,
     bookingInfo.end_date
   );
@@ -106,6 +106,6 @@ export async function paymentOfBooking(userId, roomId, bookingInfo) {
     error.statusCode = 400;
     throw error;
   } else {
-    return await roomRepositroy.createBooking(userId, roomId, bookingInfo);
+    return await roomRepositroy.payment(userId, roomTypeId, bookingInfo);
   }
 }

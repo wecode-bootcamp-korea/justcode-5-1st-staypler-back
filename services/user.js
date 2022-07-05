@@ -5,12 +5,12 @@ import * as userRepository from '../models/user.js';
 
 dotenv.config();
 
-export const signup = async (email, username, password, phoneNumber) => {
+export const signUp = async (email, username, password, phoneNumber) => {
   //password validation
-  const pwValidation = new RegExp(
+  const passwordValidation = new RegExp(
     '^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})'
   );
-  if (!pwValidation.test(password)) {
+  if (!passwordValidation.test(password)) {
     const err = new Error('PASSWORD_IS_NOT_VALID');
     err.statusCode = 409;
     throw err;
@@ -50,20 +50,20 @@ export const signup = async (email, username, password, phoneNumber) => {
     err.statusCode = 409;
     throw err;
   }
-
-  const encryptPw = bcrypt.hashSync(password, bcrypt.genSaltSync()); //솔팅 -> 임의로 생성된 문자열
+  const salt = await bcrypt.genSalt();
+  const encryptPassword = await bcrypt.hash(password, salt); //솔팅 -> 임의로 생성된 문자열
 
   const createUser = await userRepository.createUser(
     email,
     username,
-    encryptPw,
+    encryptPassword,
     phoneNumber
   );
 
   return createUser;
 };
 
-export const logIn = async (email, password) => {
+export const login = async (email, password) => {
   //회원가입한 유저인지 확인
   const user = await userRepository.readUserByEmail(email);
   if (user.length === 0) {
@@ -73,13 +73,13 @@ export const logIn = async (email, password) => {
   }
 
   //비밀번호 확인
-  const loginTryUser_Password = await userRepository.passwordIsCorrect(email);
-  const pwIsCorrect = await bcrypt.compare(
+  const inputPassword = await userRepository.passwordIsCorrect(email);
+  const passwordIsCorrect = await bcrypt.compare(
     password,
-    loginTryUser_Password[0].password
+    inputPassword[0].password
   );
 
-  if (!pwIsCorrect) {
+  if (!passwordIsCorrect) {
     const error = new Error('INVALID_USER');
     error.statusCode = 400;
     throw error;
@@ -91,7 +91,7 @@ export const logIn = async (email, password) => {
 };
 
 export const me = async userId => {
-  const user = await userRepository.getUserIdbyId(userId);
+  const user = await userRepository.getUserbyId(userId);
   if (user.length === 0) {
     const error = new Error('User Not Found');
     error.statusCode = 404;
