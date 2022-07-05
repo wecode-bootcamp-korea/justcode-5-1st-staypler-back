@@ -19,7 +19,7 @@ export const signup = async (email, username, password, phoneNumber) => {
   //중복 이메일
   const userEmail = await userRepository.readUserByEmail(email);
   if (userEmail.length) {
-    const err = new Error('EXSITING_USER');
+    const err = new Error('EXISTING_USER');
     err.statusCode = 409;
     throw err;
   }
