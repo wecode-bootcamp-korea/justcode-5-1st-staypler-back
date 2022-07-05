@@ -42,6 +42,7 @@ export async function getRoomsById(userId, roomsId, date) {
       rooms[0].room = roomsImage[0].room;
       return rooms;
     } else {
+      rooms[0].room = [];
       return rooms;
     }
   }
