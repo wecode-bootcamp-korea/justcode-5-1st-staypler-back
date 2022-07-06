@@ -62,6 +62,7 @@ function generateHavingStatement({
   type,
   max_limit,
   theme,
+  province,
 }) {
   const havingArray = [];
   if (min_price) {
@@ -88,6 +89,9 @@ function generateHavingStatement({
         .map(name => `'${name}'`)
         .join(',')})`
     );
+  }
+  if (province) {
+    havingArray.push(`province LIKE '%${province}%'`);
   }
   return havingArray.length ? `HAVING ${havingArray.join(' and ')}` : '';
 }
