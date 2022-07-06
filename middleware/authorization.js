@@ -15,7 +15,7 @@ export const validateToken = async (req, res, next) => {
     if (error) {
       return res.status(401).json(AUTH_ERROR);
     }
-    const user = await userRepository.getUserIdbyId(decoded.id);
+    const user = await userRepository.getUserbyId(decoded.id);
     if (!user) {
       return res.status(401).json(AUTH_ERROR);
     }
