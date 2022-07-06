@@ -8,6 +8,14 @@ export async function getMyPage(userId) {
 }
 
 export async function updateMyPage(userInfo) {
+  const phoneNumberValidation = new RegExp(
+    '^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})'
+  );
+  if (!phoneNumberValidation.test(userInfo.phone_number)) {
+    const err = new Error('PHONE_NUMBER_IS_NOT_VALID');
+    err.statusCode = 409;
+    throw err;
+  }
   return await myPageRepository.updateMyPage(userInfo);
 }
 
