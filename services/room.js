@@ -2,7 +2,7 @@ import * as roomRepositroy from '../models/room.js';
 
 export async function accommodationList(userId, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
-  const page = parseInt(query.page) - 1;
+  const page = parseInt(query.page ? query.page : 1) - 1;
   const keyword = query.search;
   const filter = {
     min_price: query.min_price,
@@ -26,7 +26,7 @@ export async function accommodationList(userId, query) {
   const result = accommodationList.map(accommodation => {
     return { ...accommodation, images: accommodation.images.filter(Boolean) };
   });
-  return [result, accommodationCount[0].total_rows];
+  return [result, Math.ceil(accommodationCount[0].total_rows / 6)];
 }
 
 export async function accommodationById(userId, roomsId, date) {
