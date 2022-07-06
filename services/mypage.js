@@ -56,7 +56,9 @@ export async function getWishList({ userId, page, count, getImageAll }) {
       delete data[i].created_at;
       delete data[i].updated_at;
 
-      data[i].image = await myPageRepository.readRoomsImages(data[i].id);
+      data[i].image = await myPageRepository.readAccommodationImages(
+        data[i].id
+      );
       data[i].image = data[i].image.map(image => image.image);
     }
   }
@@ -77,7 +79,9 @@ export async function getReservationList({ userId, page, count, getImageAll }) {
   );
   if (getImageAll === '1') {
     for (let i = 0; i < data.length; i++) {
-      data[i].image = await myPageRepository.readRoomsImages(data[i].id);
+      data[i].image = await myPageRepository.readAccommodationImages(
+        data[i].id
+      );
       data[i].image = data[i].image.map(image => image.image);
     }
   }
