@@ -137,7 +137,7 @@ JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT 
 ON rooms.id = ri.rooms_id
 ${
   userId
-    ? `LEFT JOIN (SELECT id,rooms_id, isLike FROM likes WHERE user_id=1 ) as rooms_like
+    ? `LEFT JOIN (SELECT id,rooms_id, isLike FROM likes WHERE user_id=${userId} AND rooms_id=${accommodationId} ) as rooms_like
 ON rooms_like.rooms_id = rooms.id`
     : ``
 }
@@ -149,7 +149,6 @@ WHERE rooms.id=${accommodationId}
 GROUP BY rooms.id,rooms_intro.title,rooms_intro.main_content,rooms_intro.sub_content ${
     userId ? `, rooms_like.isLike` : ``
   }`);
-
   return roomInfo;
 }
 
