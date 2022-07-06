@@ -11,7 +11,6 @@ export async function accommodationList(userId, query) {
     max_limit: query.max_limit,
     theme: query.theme,
   };
-
   const sortKeyword = query.sort;
 
   const [accommodationList, accommodationCount] = await roomRepositroy.readAll(
