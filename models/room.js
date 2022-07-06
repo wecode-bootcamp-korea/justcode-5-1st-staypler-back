@@ -71,13 +71,13 @@ function generateHavingStatement({
     havingArray.push(`max_price < ${max_price}`);
   }
   if (type) {
-    havingArray.push(`type='${type}'`);
+    havingArray.push(`type IN (${type})`);
   }
   if (max_limit) {
     havingArray.push(`max_limit > ${max_limit}`);
   }
   if (theme) {
-    havingArray.push(`theme='${theme}'`);
+    havingArray.push(`theme IN (${theme})`);
   }
   return havingArray.length ? `HAVING ${havingArray.join(' and ')}` : '';
 }
