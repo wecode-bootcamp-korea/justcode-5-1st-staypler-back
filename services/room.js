@@ -10,6 +10,7 @@ export async function accommodationList(userId, query) {
     type: query.type,
     max_limit: query.max_limit,
     theme: query.theme,
+    province: query.province,
   };
   const sortKeyword = query.sort;
 
