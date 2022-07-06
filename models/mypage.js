@@ -26,7 +26,7 @@ export async function readWishList(userId, page, count, isImageAll) {
       LEFT JOIN (SELECT rooms_id,MAX(price) max_price, MIN(price) min_price, MAX(max_limit) max_limit, MIN(min_limit) min_limit FROM room_type GROUP BY rooms_id) room_type ON room_type.rooms_id = r.id
       LEFT JOIN rooms_image ON rooms_image.rooms_id = r.id
       LEFT JOIN likes ON likes.rooms_id = r.id
-      WHERE likes.user_id = ${userId}
+      WHERE likes.user_id = ${userId} AND likes.isLike=true
       GROUP BY r.id
       ORDER BY r.id
       LIMIT ${count} OFFSET ${(page - 1) * count}
