@@ -6,11 +6,11 @@ export async function accommodationList(req, res) {
   try {
     const authHeader = req.get('Authorization') || '';
     const token = authHeader ? authHeader.split(' ')[1] : '';
-    const [rooms, roomsCnt] = await roomService.accommodationList(
+    const [data, maxPage] = await roomService.accommodationList(
       !!!(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
       req.query
     );
-    res.status(200).json({ data: rooms, rooms_count: roomsCnt });
+    res.status(200).json({ data, maxPage });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

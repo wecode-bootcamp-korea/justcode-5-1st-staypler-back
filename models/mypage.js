@@ -15,9 +15,10 @@ export async function updateInfo(userInfo) {
   return result;
 }
 
-export async function readWishList(userId, page, count, isImageAll) {
+export async function readWishList(userId, page, isImageAll) {
+  const limit = 3;
   const wishRoomList = await prismaClient.$queryRawUnsafe(`
-  SELECT r.id,r.concept, r.title rooms_name, r.type, r.address, r.province, r.city, room_type.max_price, room_type.min_price,room_type.max_limit,room_type.min_limit, room_type.max_price, room_type.min_price ${
+  SELECT r.id rooms_id,r.concept, r.title rooms_name, r.type, r.address, r.province, r.city, room_type.max_price, room_type.min_price,room_type.max_limit,room_type.min_limit, room_type.max_price, room_type.min_price ${
     isImageAll
       ? `, (SELECT image FROM rooms_image WHERE rooms_image.rooms_id=r.id ORDER BY rooms_image.id limit 1) image`
       : ``
@@ -29,7 +30,7 @@ export async function readWishList(userId, page, count, isImageAll) {
       WHERE likes.user_id = ${userId} AND likes.isLike=true
       GROUP BY r.id
       ORDER BY r.id
-      LIMIT ${count} OFFSET ${(page - 1) * count}
+      LIMIT ${limit} OFFSET ${(page - 1) * limit}
   `);
   return wishRoomList;
 }
@@ -65,9 +66,10 @@ export async function readAccommodationImages(accommodationId) {
   return roomsImageList;
 }
 
-export async function readReservationList(userId, page, count, isImageAll) {
+export async function readReservationList(userId, page, isImageAll) {
+  const limit = 3;
   const bookingRoomList = await prismaClient.$queryRawUnsafe(`
-  SELECT rooms.id,rooms.title rooms_name,rooms.province,rooms.city ,reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price max_price, r.price min_price ${
+  SELECT rooms.id rooms_id,rooms.title rooms_name,rooms.province,rooms.city ,reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price max_price, r.price min_price ${
     isImageAll
       ? `,(SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image`
       : ``
@@ -80,7 +82,7 @@ ON reservation.room_type_id = r.id
 JOIN rooms
 ON r.rooms_id = rooms.id
 ORDER BY reservation.start_date DESC
-LIMIT ${count} OFFSET ${(page - 1) * count}
+LIMIT ${limit} OFFSET ${(page - 1) * limit}
   `);
 
   return bookingRoomList;

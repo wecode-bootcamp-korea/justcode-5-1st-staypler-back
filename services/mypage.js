@@ -44,14 +44,10 @@ export const updatePassword = async (
   return await userRepository.updatePassword(userId, encryptPassword);
 };
 
-export async function getWishList({ userId, page, count, getImageAll }) {
+export async function getWishList({ userId, page, getImageAll }) {
   const maxPage = await myPageRepository.readWishListRowCount(userId);
-  const data = await myPageRepository.readWishList(
-    userId,
-    page,
-    count,
-    getImageAll
-  );
+  const data = await myPageRepository.readWishList(userId, page, getImageAll);
+  const count = 3;
   if (getImageAll === '1') {
     for (let i = 0; i < data.length; i++) {
       delete data[i].concept;
@@ -77,14 +73,14 @@ export async function getWishList({ userId, page, count, getImageAll }) {
   };
 }
 
-export async function getReservationList({ userId, page, count, getImageAll }) {
+export async function getReservationList({ userId, page, getImageAll }) {
   const maxPage = await myPageRepository.readReservationRowCount(userId);
   const data = await myPageRepository.readReservationList(
     userId,
     page,
-    count,
     getImageAll
   );
+  const count = 3;
   if (getImageAll === '1') {
     for (let i = 0; i < data.length; i++) {
       data[i].image = await myPageRepository.readAccommodationImages(
