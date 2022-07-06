@@ -129,7 +129,7 @@ export async function readById(userId, accommodationId) {
   rooms.address
 
 FROM (SELECT id, title, concept, address, province, city FROM rooms GROUP BY id) rooms
-JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN JSON_OBJECT('id', rooms_image.id, 'url',rooms_image.image) END)  images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
+JOIN (SELECT rooms_image.rooms_id,JSON_ARRAYAGG(CASE WHEN rooms_image.id IS NOT NULL AND rooms_image.image IS NOT NULL THEN rooms_image.image END)  images FROM rooms_image GROUP BY rooms_image.rooms_id) ri
 ON rooms.id = ri.rooms_id
 ${
   userId
@@ -151,7 +151,7 @@ GROUP BY rooms.id,rooms_intro.title,rooms_intro.main_content,rooms_intro.sub_con
 
 export async function roomImageById(date, accommodationId) {
   const rooms = await prismaClient.$queryRawUnsafe(
-    `SELECT rooms_id,JSON_ARRAYAGG(CASE WHEN id IS NOT NULL THEN JSON_OBJECT('id',id,'title',title,'type',type,'price',price,'max_limit',max_limit,'min_limit',min_limit) END) room FROM room_type WHERE ${
+    `SELECT rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',title,'type',type,'price',price,'image',rti.image,'max_limit',max_limit,'min_limit',min_limit) END) room FROM room_type JOIN (SELECT id,image FROM room_type_image) rti ON room_type.id=rti.id WHERE ${
       date.start_date && date.end_date
         ? `room_type.id NOT IN (SELECT reservation.room_type_id FROM reservation WHERE ( '${date.start_date}' < reservation.end_date ) AND ( reservation.start_date < '${date.end_date}' )) AND`
         : ``

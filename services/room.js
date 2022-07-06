@@ -39,7 +39,7 @@ export async function accommodationById(userId, roomsId, date) {
     const roomList = await roomRepositroy.roomImageById(date, roomsId);
     if (roomList.length) {
       accommodation[0].room = roomList[0].room;
-      return rooms;
+      return accommodation;
     } else {
       accommodation[0].room = [];
       return accommodation;
@@ -59,6 +59,7 @@ export async function accommodationLike(userId, roomId) {
 }
 
 export async function roomById(id, date) {
+  console.log(id, date);
   const check = await roomRepositroy.roomCheck(id);
   if (!!check.length) {
     const result = await roomRepositroy.roomById(id, date);
