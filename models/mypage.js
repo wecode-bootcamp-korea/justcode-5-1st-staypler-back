@@ -15,10 +15,10 @@ export async function updateInfo(userInfo) {
   return result;
 }
 
-export async function readWishList(userId, page, count, getImageAll) {
+export async function readWishList(userId, page, count, isImageAll) {
   const wishRoomList = await prismaClient.$queryRawUnsafe(`
   SELECT r.id,r.concept, r.title rooms_name, r.type, r.address, r.province, r.city, room_type.max_price, room_type.min_price,room_type.max_limit,room_type.min_limit, room_type.max_price, room_type.min_price ${
-    getImageAll
+    isImageAll
       ? `, (SELECT image FROM rooms_image WHERE rooms_image.rooms_id=r.id ORDER BY rooms_image.id limit 1) image`
       : ``
   }
@@ -58,17 +58,17 @@ ORDER BY reservation.start_date DESC) r;
   return bookingRoomCount;
 }
 
-export async function readRoomsImages(roomId) {
+export async function readAccommodationImages(accommodationId) {
   const roomsImageList = await prismaClient.$queryRaw`
     SELECT image FROM rooms_image AS ri
-    WHERE ri.rooms_id = ${roomId}`;
+    WHERE ri.rooms_id = ${accommodationId}`;
   return roomsImageList;
 }
 
-export async function readReservationList(userId, page, count, getImageAll) {
+export async function readReservationList(userId, page, count, isImageAll) {
   const bookingRoomList = await prismaClient.$queryRawUnsafe(`
   SELECT rooms.id,rooms.title rooms_name,rooms.province,rooms.city ,reservation.start_date, reservation.end_date,r.max_limit,r.min_limit, r.price max_price, r.price min_price ${
-    getImageAll
+    isImageAll
       ? `,(SELECT image FROM rooms_image WHERE rooms_image.id=r.rooms_id ORDER BY rooms_image.id limit 1) image`
       : ``
   }
