@@ -71,13 +71,23 @@ function generateHavingStatement({
     havingArray.push(`max_price < ${max_price}`);
   }
   if (type) {
-    havingArray.push(`type='${type}'`);
+    havingArray.push(
+      `type IN (${type
+        .split(',')
+        .map(name => `'${name}'`)
+        .join(',')})`
+    );
   }
   if (max_limit) {
     havingArray.push(`max_limit > ${max_limit}`);
   }
   if (theme) {
-    havingArray.push(`theme='${theme}'`);
+    havingArray.push(
+      `theme.name IN (${theme
+        .split(',')
+        .map(name => `'${name}'`)
+        .join(',')})`
+    );
   }
   return havingArray.length ? `HAVING ${havingArray.join(' and ')}` : '';
 }
