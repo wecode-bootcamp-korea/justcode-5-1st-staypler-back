@@ -68,6 +68,8 @@ export async function reservationInfo(req, res) {
         end_date: req.query.end_date,
       }
     );
+    data[0].start_date = req.query.start_date;
+    data[0].end_date = req.query.end_date;
     res.status(200).json({ data });
   } catch (error) {
     res.status(500).json({ message: error.message });
