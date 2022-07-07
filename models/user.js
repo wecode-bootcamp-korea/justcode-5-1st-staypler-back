@@ -35,11 +35,3 @@ export const updatePassword = async (user_id, password) => {
     UPDATE users set password=${password} WHERE id=${user_id}
   `;
 };
-
-export async function readUserInfo(userId) {
-  const userInfo = await prisma.$queryRaw`
-  SELECT email, name FROM users WHERE id=${userId};
-  `;
-
-  return userInfo;
-}
