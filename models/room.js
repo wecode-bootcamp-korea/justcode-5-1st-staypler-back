@@ -6,7 +6,8 @@ export async function readAllAccommodations(
   keyword,
   filter,
   sortKeyword,
-  page
+  page,
+  limit
 ) {
   const sql = `SELECT
   rooms.id,
@@ -45,7 +46,7 @@ ${generateOrderByStatemnet(sortKeyword)}
     `SELECT COUNT(*) total_rows FROM (${sql}) t`
   );
   const rooms = await prismaClient.$queryRawUnsafe(
-    sql + generateLimitOffsetStatement(page)
+    sql + generateLimitOffsetStatement(page, limit)
   );
   return [rooms, roomsCnt];
 }
@@ -108,8 +109,7 @@ function generateJoinDateStatement(start_date, end_date) {
     : `JOIN room_type ON rooms.id = room_type.rooms_id`;
 }
 
-function generateLimitOffsetStatement(page) {
-  const limit = 6;
+function generateLimitOffsetStatement(page, limit) {
   return ` LIMIT ${limit} OFFSET ${limit * page}`;
 }
 

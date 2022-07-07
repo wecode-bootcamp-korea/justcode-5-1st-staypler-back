@@ -3,6 +3,7 @@ import * as roomRepositroy from '../models/room.js';
 export async function accommodationList(userId, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
   const page = parseInt(query.page ? query.page : 1) - 1;
+  const limit = parseInt(query.limit ? query.limit : 6);
   const keyword = query.search;
   const filter = {
     min_price: query.min_price,
@@ -21,7 +22,8 @@ export async function accommodationList(userId, query) {
       keyword,
       filter,
       sortKeyword,
-      page
+      page,
+      limit
     );
 
   const result = accommodationList.map(accommodation => {
