@@ -89,13 +89,3 @@ export const login = async (email, password) => {
   const token = jwt.sign({ id }, process.env.SECRET_KEY);
   return token;
 };
-
-export const me = async userId => {
-  const user = await userRepository.getUserbyId(userId);
-  if (user.length === 0) {
-    const error = new Error('User Not Found');
-    error.statusCode = 404;
-    throw error;
-  }
-  return;
-};
