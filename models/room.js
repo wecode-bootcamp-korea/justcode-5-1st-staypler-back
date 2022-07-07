@@ -213,8 +213,9 @@ export async function roomCheck(roomTypeId) {
 
 const generateWhereStatement = date => {
   return date.start_date && date.end_date
-    ? `WHERE ( '${start_date}' < reservation.end_date ) AND ( reservation.start_date < '${end_date}' )
-OR reservation.start_date IS NULL AND reservation.end_date IS NULL`
+    ? `WHERE ( '${date.start_date}' < reservation.end_date ) AND ( reservation.start_date < '${date.end_date}' )
+OR reservation.start_date IS NULL AND reservation.end_date IS NULL
+OR reservation.start_date IS NOT NULL AND reservation.end_date IS NOT NULL`
     : ``;
 };
 

@@ -67,7 +67,6 @@ export async function accommodationLike(userId, roomId) {
 }
 
 export async function roomById(id, date) {
-  console.log(id, date);
   const check = await roomRepositroy.roomCheck(id);
   if (!!check.length) {
     const result = await roomRepositroy.readRoomById(id, date);
