@@ -7,17 +7,12 @@ export const createUser = async (email, username, encryptPw, phoneNumber) => {
 
 export const readUserByEmail = async email => {
   return await prisma.$queryRaw`
-        SELECT users.email FROM users where email = ${email}`;
+        SELECT id,email,password FROM users where email = ${email}`;
 };
 
 export const getUserPasswordbyId = async user_id => {
   return await prisma.$queryRaw`
         SELECT password FROM users WHERE id=${user_id}`;
-};
-
-export const getUserIdByEmail = async email => {
-  return await prisma.$queryRaw`
-        SELECT id FROM users WHERE email = ${email}`;
 };
 
 export const getUserbyId = async user_id => {
