@@ -35,12 +35,3 @@ export const login = async (req, res) => {
       .json({ message: err.message, status: err.statusCode });
   }
 };
-
-export const me = async (req, res) => {
-  try {
-    await userService.me(req.userId);
-    res.status(200).json({ token: req.token });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
-  }
-};

@@ -3,6 +3,7 @@ import * as roomRepositroy from '../models/room.js';
 export async function accommodationList(userId, query) {
   const date = { start_date: query.start_date, end_date: query.end_date };
   const page = parseInt(query.page ? query.page : 1) - 1;
+  const limit = parseInt(query.limit ? query.limit : 6);
   const keyword = query.search;
   const filter = {
     min_price: query.min_price,
@@ -14,14 +15,16 @@ export async function accommodationList(userId, query) {
   };
   const sortKeyword = query.sort;
 
-  const [accommodationList, accommodationCount] = await roomRepositroy.readAll(
-    userId,
-    date,
-    keyword,
-    filter,
-    sortKeyword,
-    page
-  );
+  const [accommodationList, accommodationCount] =
+    await roomRepositroy.readAllAccommodations(
+      userId,
+      date,
+      keyword,
+      filter,
+      sortKeyword,
+      page,
+      limit
+    );
 
   const result = accommodationList.map(accommodation => {
     return { ...accommodation, images: accommodation.images.filter(Boolean) };
@@ -30,14 +33,17 @@ export async function accommodationList(userId, query) {
 }
 
 export async function accommodationById(userId, roomsId, date) {
-  const check = await roomRepositroy.checkId(roomsId);
+  const check = await roomRepositroy.checkAccommodationId(roomsId);
   if (!check.length) {
     const error = new Error('해당 페이지가 존재하지 않습니다.');
     error.statusCode = 404;
     throw error;
   } else {
-    const accommodation = await roomRepositroy.readById(userId, roomsId);
-    const roomList = await roomRepositroy.roomImageById(date, roomsId);
+    const accommodation = await roomRepositroy.readAccommodationById(
+      userId,
+      roomsId
+    );
+    const roomList = await roomRepositroy.readRooms(date, roomsId);
     if (roomList.length) {
       accommodation[0].room = roomList[0].room;
       return accommodation;
@@ -55,7 +61,8 @@ export async function accommodationLike(userId, roomId) {
     return { isLike: true };
   } else {
     await roomRepositroy.updateLike(userId, roomId, !check.isLike);
-    return { isLike: !check.isLike };
+    const isLike = await roomRepositroy.checkLike(userId, roomId);
+    return { isLike: Boolean(isLike.isLike) };
   }
 }
 
@@ -63,7 +70,7 @@ export async function roomById(id, date) {
   console.log(id, date);
   const check = await roomRepositroy.roomCheck(id);
   if (!!check.length) {
-    const result = await roomRepositroy.roomById(id, date);
+    const result = await roomRepositroy.readRoomById(id, date);
     return result;
   } else {
     const error = new Error('Page Not Found');
@@ -79,14 +86,17 @@ export async function reservationInfo(roomTypeId, userId, date) {
     date.start_date,
     date.end_date
   );
-
-  if (!!duplicateCheck.length) {
-    const error = new Error('해당 날짜는 예약이 마감되었습니다.');
-    error.statusCode = 400;
-    throw error;
-  }
   if (!!check.length) {
-    const data = await roomRepositroy.readBookingInfo(roomTypeId, userId, date);
+    if (!!duplicateCheck.length) {
+      const error = new Error('해당 날짜는 예약이 마감되었습니다.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const data = await roomRepositroy.getRoomTypeByUserId(
+      roomTypeId,
+      userId,
+      date
+    );
     return data;
   } else {
     const error = new Error('Page Not Found');
@@ -107,6 +117,10 @@ export async function payment(userId, roomTypeId, bookingInfo) {
     error.statusCode = 400;
     throw error;
   } else {
-    return await roomRepositroy.payment(userId, roomTypeId, bookingInfo);
+    return await roomRepositroy.createResevation(
+      userId,
+      roomTypeId,
+      bookingInfo
+    );
   }
 }

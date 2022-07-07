@@ -1,12 +1,13 @@
 import prismaClient from './prisma-client.js';
 
-export async function readAll(
+export async function readAllAccommodations(
   userId,
   date,
   keyword,
   filter,
   sortKeyword,
-  page
+  page,
+  limit
 ) {
   const sql = `SELECT
   rooms.id,
@@ -45,7 +46,7 @@ ${generateOrderByStatemnet(sortKeyword)}
     `SELECT COUNT(*) total_rows FROM (${sql}) t`
   );
   const rooms = await prismaClient.$queryRawUnsafe(
-    sql + generateLimitOffsetStatement(page)
+    sql + generateLimitOffsetStatement(page, limit)
   );
   return [rooms, roomsCnt];
 }
@@ -108,18 +109,17 @@ function generateJoinDateStatement(start_date, end_date) {
     : `JOIN room_type ON rooms.id = room_type.rooms_id`;
 }
 
-function generateLimitOffsetStatement(page) {
-  const limit = 6;
+function generateLimitOffsetStatement(page, limit) {
   return ` LIMIT ${limit} OFFSET ${limit * page}`;
 }
 
-export async function checkId(accommodationId) {
+export async function checkAccommodationId(accommodationId) {
   const room = await prismaClient.$queryRaw`
   SELECT * FROM rooms WHERE id=${accommodationId}`;
   return room;
 }
 
-export async function readById(userId, accommodationId) {
+export async function readAccommodationById(userId, accommodationId) {
   const roomInfo = prismaClient.$queryRawUnsafe(`SELECT
   rooms.id,
   rooms.title,
@@ -152,7 +152,7 @@ GROUP BY rooms.id,rooms_intro.title,rooms_intro.main_content,rooms_intro.sub_con
   return roomInfo;
 }
 
-export async function roomImageById(date, accommodationId) {
+export async function readRooms(date, accommodationId) {
   const rooms = await prismaClient.$queryRawUnsafe(
     `SELECT rooms_id,JSON_ARRAYAGG(CASE WHEN room_type.id IS NOT NULL THEN JSON_OBJECT('id',room_type.id,'title',title,'type',type,'price',price,'image',rti.image,'max_limit',max_limit,'min_limit',min_limit) END) room FROM room_type JOIN (SELECT id,image FROM room_type_image) rti ON room_type.id=rti.id WHERE ${
       date.start_date && date.end_date
@@ -181,7 +181,7 @@ export async function checkLike(userId, accommodationId) {
   return result;
 }
 
-export async function roomById(roomTypeId, date) {
+export async function readRoomById(roomTypeId, date) {
   const room =
     await prismaClient.$queryRawUnsafe(`SELECT reservations.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
       date.start_date && date.end_date
@@ -218,7 +218,7 @@ OR reservation.start_date IS NULL AND reservation.end_date IS NULL`
     : ``;
 };
 
-export async function readBookingInfo(roomTypeId, userId, date) {
+export async function getRoomTypeByUserId(roomTypeId, userId, date) {
   const timeDiff = `TIMESTAMPDIFF(DAY,'${date.start_date}','${date.end_date}')`;
   const result = await prismaClient.$queryRawUnsafe(`
   SELECT rooms.title rooms_name, room_type.title room_name, room_type.type , room_type.price, users.name user_name, users.phone phone_number, users.email, ${timeDiff} nights, ${timeDiff} * room_type.price total_price
@@ -243,7 +243,7 @@ export async function checkReservation(roomTypeId, start_date, end_date) {
   return check;
 }
 
-export async function payment(userId, roomTypeId, bookingInfo) {
+export async function createResevation(userId, roomTypeId, bookingInfo) {
   const result = prismaClient.$queryRawUnsafe(`
   INSERT INTO reservation(room_type_id,user_id,name,phone,email,number,start_date,end_date) VALUES(${roomTypeId},${userId},'${bookingInfo.name}','${bookingInfo.phone_number}','${bookingInfo.email}',${bookingInfo.number} ,'${bookingInfo.start_date}','${bookingInfo.end_date}');
   `);

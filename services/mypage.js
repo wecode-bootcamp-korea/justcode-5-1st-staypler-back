@@ -44,49 +44,46 @@ export const updatePassword = async (
   return await userRepository.updatePassword(userId, encryptPassword);
 };
 
-export async function getWishList({ userId, page, getImageAll }) {
+export async function getWishList({ userId, page, getImageAll, count }) {
   const maxPage = await myPageRepository.readWishListRowCount(userId);
-  const data = await myPageRepository.readWishList(userId, page, getImageAll);
-  const count = 3;
+  const data = await myPageRepository.readWishList(userId, page, count);
   if (getImageAll === '1') {
     for (let i = 0; i < data.length; i++) {
-      delete data[i].concept;
-      delete data[i].type;
-      delete data[i].address;
-      delete data[i].check_in_time;
-      delete data[i].check_out_time;
-      delete data[i].user_id;
-      delete data[i].isLike;
-      delete data[i].created_at;
-      delete data[i].updated_at;
-
       data[i].image = await myPageRepository.readAccommodationImages(
-        data[i].id
+        data[i].rooms_id
       );
       data[i].image = data[i].image.map(image => image.image);
     }
+  } else {
+    for (let i = 0; i < data.length; i++) {
+      const image = await myPageRepository.readAccommodationImage(
+        data[i].rooms_id
+      );
+      data[i].image = image[0].image;
+    }
   }
-
   return {
     data,
     maxPage: Math.ceil(maxPage[0].cnt / count),
   };
 }
 
-export async function getReservationList({ userId, page, getImageAll }) {
+export async function getReservationList({ userId, page, getImageAll, count }) {
   const maxPage = await myPageRepository.readReservationRowCount(userId);
-  const data = await myPageRepository.readReservationList(
-    userId,
-    page,
-    getImageAll
-  );
-  const count = 3;
+  const data = await myPageRepository.readReservationList(userId, page, count);
   if (getImageAll === '1') {
     for (let i = 0; i < data.length; i++) {
       data[i].image = await myPageRepository.readAccommodationImages(
-        data[i].id
+        data[i].rooms_id
       );
       data[i].image = data[i].image.map(image => image.image);
+    }
+  } else {
+    for (let i = 0; i < data.length; i++) {
+      const image = await myPageRepository.readAccommodationImage(
+        data[i].rooms_id
+      );
+      data[i].image = image[0].image;
     }
   }
   return {

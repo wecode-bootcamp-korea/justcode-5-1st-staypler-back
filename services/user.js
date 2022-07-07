@@ -7,6 +7,7 @@ dotenv.config();
 
 export const signUp = async (email, username, password, phoneNumber) => {
   //password validation
+  const [userInfo] = await userRepository.readUserByEmail(email);
   const passwordValidation = new RegExp(
     '^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})'
   );
@@ -17,8 +18,7 @@ export const signUp = async (email, username, password, phoneNumber) => {
   }
 
   //중복 이메일
-  const userEmail = await userRepository.readUserByEmail(email);
-  if (userEmail.length) {
+  if (userInfo) {
     const err = new Error('EXISTING_USER');
     err.statusCode = 409;
     throw err;
@@ -65,19 +65,15 @@ export const signUp = async (email, username, password, phoneNumber) => {
 
 export const login = async (email, password) => {
   //회원가입한 유저인지 확인
-  const user = await userRepository.readUserByEmail(email);
-  if (user.length === 0) {
+  const [userInfo] = await userRepository.readUserByEmail(email);
+  if (!userInfo) {
     const error = new Error('INVALID_USER');
     error.statusCode = 400;
     throw error;
   }
 
   //비밀번호 확인
-  const inputPassword = await userRepository.passwordIsCorrect(email);
-  const passwordIsCorrect = await bcrypt.compare(
-    password,
-    inputPassword[0].password
-  );
+  const passwordIsCorrect = await bcrypt.compare(password, userInfo.password);
 
   if (!passwordIsCorrect) {
     const error = new Error('INVALID_USER');
@@ -85,17 +81,6 @@ export const login = async (email, password) => {
     throw error;
   }
 
-  const [{ id }] = await userRepository.getUserIdByEmail(email);
-  const token = jwt.sign({ id }, process.env.SECRET_KEY);
+  const token = jwt.sign({ id: userInfo.id }, process.env.SECRET_KEY);
   return token;
-};
-
-export const me = async userId => {
-  const user = await userRepository.getUserbyId(userId);
-  if (user.length === 0) {
-    const error = new Error('User Not Found');
-    error.statusCode = 404;
-    throw error;
-  }
-  return;
 };
