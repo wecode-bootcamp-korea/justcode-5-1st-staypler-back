@@ -183,7 +183,7 @@ export async function checkLike(userId, accommodationId) {
 
 export async function readRoomById(roomTypeId, date) {
   const room =
-    await prismaClient.$queryRawUnsafe(`SELECT reservations.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
+    await prismaClient.$queryRawUnsafe(`SELECT accommodation_room.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
       date.start_date && date.end_date
         ? `TIMESTAMPDIFF(DAY ,'${date.start_date}','${date.end_date}') * room_type.price total_price,`
         : ``
@@ -195,12 +195,12 @@ export async function readRoomById(roomTypeId, date) {
   FROM room_type
   LEFT JOIN reservation
   ON reservation.room_type_id = room_type.id
-  ${generateWhereStatement(date)}) reservations
-  ON reservations.id = room_type.id
+  ${generateWhereStatement(date)}) accommodation_room
+  ON accommodation_room.id = room_type.id
   LEFT JOIN (SELECT room_type_id FROM reservation GROUP BY room_type_id) reservation
   ON room_type.id = reservation.room_type_id
-  WHERE reservations.id =${roomTypeId}
-  GROUP BY reservations.id,rti.images`);
+  WHERE accommodation_room.id =${roomTypeId}
+  GROUP BY accommodation_room.id,rti.images`);
   return room;
 }
 
