@@ -7,7 +7,11 @@ import {
 
 const router = express.Router();
 
-router.get('/', validateTokenForRoomsAndRoom, roomController.accommodationList);
+router.get(
+  '/rooms',
+  validateTokenForRoomsAndRoom,
+  roomController.accommodationList
+);
 
 router.get(
   '/rooms/room/bookings',

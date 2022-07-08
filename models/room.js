@@ -244,6 +244,29 @@ export async function checkReservation(roomTypeId, start_date, end_date) {
   return check;
 }
 
+export async function readWishList(userId, page, count) {
+  const wishRoomList = await prismaClient.$queryRawUnsafe(`
+  SELECT r.id rooms_id,r.concept, r.title rooms_name, r.type, r.address, r.province, r.city, room_type.max_price, room_type.min_price,room_type.max_limit,room_type.min_limit, room_type.max_price, room_type.min_price
+  FROM rooms AS r
+      LEFT JOIN (SELECT rooms_id,MAX(price) max_price, MIN(price) min_price, MAX(max_limit) max_limit, MIN(min_limit) min_limit FROM room_type GROUP BY rooms_id) room_type ON room_type.rooms_id = r.id
+      LEFT JOIN rooms_image ON rooms_image.rooms_id = r.id
+      LEFT JOIN likes ON likes.rooms_id = r.id
+      WHERE likes.user_id = ${userId} AND likes.isLike=true
+      GROUP BY r.id
+      ORDER BY r.id
+      LIMIT ${count} OFFSET ${(page - 1) * count}
+  `);
+  return wishRoomList;
+}
+
+export async function readWishListRowCount(userId) {
+  const wishRoomCount = await prismaClient.$queryRaw`
+    SELECT count(*) cnt FROM rooms AS r
+    LEFT JOIN likes ON likes.rooms_id = r.id
+    WHERE likes.user_id = ${userId}`;
+  return wishRoomCount;
+}
+
 export async function createResevation(userId, roomTypeId, bookingInfo) {
   const result = prismaClient.$queryRawUnsafe(`
   INSERT INTO reservation(room_type_id,user_id,name,phone,email,number,start_date,end_date) VALUES(${roomTypeId},${userId},'${bookingInfo.name}','${bookingInfo.phone_number}','${bookingInfo.email}',${bookingInfo.number} ,'${bookingInfo.start_date}','${bookingInfo.end_date}');
