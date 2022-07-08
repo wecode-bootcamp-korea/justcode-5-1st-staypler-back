@@ -1,9 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import * as userRepository from '../models/user.js';
-
-dotenv.config();
 
 export const signUp = async (email, username, password, phoneNumber) => {
   //password validation

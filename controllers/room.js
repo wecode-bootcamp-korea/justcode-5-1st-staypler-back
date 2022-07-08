@@ -1,7 +1,5 @@
 import * as roomService from '../services/room.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
 export async function accommodationList(req, res) {
   try {
     const [data, maxPage] = await roomService.accommodationList(

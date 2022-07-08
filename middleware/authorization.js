@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as userRepository from '../models/user.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
 const AUTH_ERROR = { message: 'Authentication Error' };
 export const validateToken = async (req, res, next) => {
   const authHeader = req.get('Authorization');
