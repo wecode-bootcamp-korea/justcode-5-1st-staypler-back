@@ -100,7 +100,6 @@ export async function wishList(req, res) {
       userId,
       getImageAll,
     });
-
     return res.status(200).json(resData);
   } catch (error) {
     res.status(500).json({ message: error.message });

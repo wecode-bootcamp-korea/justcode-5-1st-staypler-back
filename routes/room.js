@@ -26,5 +26,5 @@ router.get(
   roomController.accommodationDetail
 );
 router.post('/rooms/:id/like', validateToken, roomController.accommodationLike);
-
+router.get('/mypage/like', validateToken, roomController.wishList);
 export default router;
