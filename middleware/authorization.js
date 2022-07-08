@@ -24,3 +24,16 @@ export const validateToken = async (req, res, next) => {
     next();
   });
 };
+
+export const validateTokenForRoomsAndRoom = async (req, _, next) => {
+  const authHeader = req.get('Authorization');
+  const token = authHeader.split(' ')[1];
+  if (token === 'null') {
+    req.userId = null;
+    next();
+  } else {
+    const userId = jwt.verify(token, process.env.SECRET_KEY).id;
+    req.userId = userId;
+    next();
+  }
+};

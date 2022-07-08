@@ -1,13 +1,11 @@
 import * as roomService from '../services/room.js';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+
 dotenv.config();
 export async function accommodationList(req, res) {
   try {
-    const authHeader = req.get('Authorization') || '';
-    const token = authHeader ? authHeader.split(' ')[1] : '';
     const [data, maxPage] = await roomService.accommodationList(
-      !!!(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      req.userId,
       req.query
     );
     res.status(200).json({ data, maxPage });
@@ -18,10 +16,8 @@ export async function accommodationList(req, res) {
 
 export async function accommodationDetail(req, res) {
   try {
-    const authHeader = req.get('Authorization') || '';
-    const token = authHeader ? authHeader.split(' ')[1] : '';
     const result = await roomService.accommodationById(
-      !!!(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      req.userId,
       req.params.id,
       {
         start_date: req.query.start_date,
