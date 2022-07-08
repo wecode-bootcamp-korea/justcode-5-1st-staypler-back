@@ -30,3 +30,18 @@ export const updatePassword = async (user_id, password) => {
     UPDATE users set password=${password} WHERE id=${user_id}
   `;
 };
+
+export async function updateMyPage(userInfo) {
+  const result = await prisma.$queryRaw`
+  UPDATE users SET name=${userInfo.name},phone=${userInfo.phone_number},profile_image_url=${userInfo.profile_image} WHERE id=${userInfo.userId}
+  `;
+
+  return result;
+}
+
+export async function readMyPage(userId) {
+  const result = await prisma.$queryRaw`
+  SELECT email,phone,name,profile_image_url FROM users WHERE id=${userId};
+  `;
+  return result;
+}

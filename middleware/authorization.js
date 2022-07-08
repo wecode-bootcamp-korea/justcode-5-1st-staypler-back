@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as userRepository from '../models/user.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
 const AUTH_ERROR = { message: 'Authentication Error' };
 export const validateToken = async (req, res, next) => {
   const authHeader = req.get('Authorization');
@@ -23,4 +21,17 @@ export const validateToken = async (req, res, next) => {
     req.token = token;
     next();
   });
+};
+
+export const validateTokenForRoomsAndRoom = async (req, _, next) => {
+  const authHeader = req.get('Authorization');
+  const token = authHeader.split(' ')[1];
+  if (token === 'null') {
+    req.userId = null;
+    next();
+  } else {
+    const userId = jwt.verify(token, process.env.SECRET_KEY).id;
+    req.userId = userId;
+    next();
+  }
 };

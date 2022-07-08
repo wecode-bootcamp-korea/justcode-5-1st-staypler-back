@@ -183,7 +183,7 @@ export async function checkLike(userId, accommodationId) {
 
 export async function readRoomById(roomTypeId, date) {
   const room =
-    await prismaClient.$queryRawUnsafe(`SELECT reservations.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
+    await prismaClient.$queryRawUnsafe(`SELECT accommodation_room.id,room_type.title room_name,rti.images ,room_type.check_in_time, room_type.check_out_time, room_type.price,${
       date.start_date && date.end_date
         ? `TIMESTAMPDIFF(DAY ,'${date.start_date}','${date.end_date}') * room_type.price total_price,`
         : ``
@@ -195,12 +195,12 @@ export async function readRoomById(roomTypeId, date) {
   FROM room_type
   LEFT JOIN reservation
   ON reservation.room_type_id = room_type.id
-  ${generateWhereStatement(date)}) reservations
-  ON reservations.id = room_type.id
+  ${generateWhereStatement(date)}) accommodation_room
+  ON accommodation_room.id = room_type.id
   LEFT JOIN (SELECT room_type_id FROM reservation GROUP BY room_type_id) reservation
   ON room_type.id = reservation.room_type_id
-  WHERE reservations.id =${roomTypeId}
-  GROUP BY reservations.id,rti.images`);
+  WHERE accommodation_room.id =${roomTypeId}
+  GROUP BY accommodation_room.id,rti.images`);
   return room;
 }
 
@@ -242,6 +242,29 @@ export async function checkReservation(roomTypeId, start_date, end_date) {
     HAVING room_type.id = ${roomTypeId}`);
 
   return check;
+}
+
+export async function readWishList(userId, page, count) {
+  const wishRoomList = await prismaClient.$queryRawUnsafe(`
+  SELECT r.id rooms_id,r.concept, r.title rooms_name, r.type, r.address, r.province, r.city, room_type.max_price, room_type.min_price,room_type.max_limit,room_type.min_limit, room_type.max_price, room_type.min_price
+  FROM rooms AS r
+      LEFT JOIN (SELECT rooms_id,MAX(price) max_price, MIN(price) min_price, MAX(max_limit) max_limit, MIN(min_limit) min_limit FROM room_type GROUP BY rooms_id) room_type ON room_type.rooms_id = r.id
+      LEFT JOIN rooms_image ON rooms_image.rooms_id = r.id
+      LEFT JOIN likes ON likes.rooms_id = r.id
+      WHERE likes.user_id = ${userId} AND likes.isLike=true
+      GROUP BY r.id
+      ORDER BY r.id
+      LIMIT ${count} OFFSET ${(page - 1) * count}
+  `);
+  return wishRoomList;
+}
+
+export async function readWishListRowCount(userId) {
+  const wishRoomCount = await prismaClient.$queryRaw`
+    SELECT count(*) cnt FROM rooms AS r
+    LEFT JOIN likes ON likes.rooms_id = r.id
+    WHERE likes.user_id = ${userId}`;
+  return wishRoomCount;
 }
 
 export async function createResevation(userId, roomTypeId, bookingInfo) {

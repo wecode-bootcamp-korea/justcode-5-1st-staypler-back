@@ -1,13 +1,9 @@
 import * as roomService from '../services/room.js';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
-dotenv.config();
+
 export async function accommodationList(req, res) {
   try {
-    const authHeader = req.get('Authorization') || '';
-    const token = authHeader ? authHeader.split(' ')[1] : '';
     const [data, maxPage] = await roomService.accommodationList(
-      !!!(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      req.userId,
       req.query
     );
     res.status(200).json({ data, maxPage });
@@ -18,10 +14,8 @@ export async function accommodationList(req, res) {
 
 export async function accommodationDetail(req, res) {
   try {
-    const authHeader = req.get('Authorization') || '';
-    const token = authHeader ? authHeader.split(' ')[1] : '';
     const result = await roomService.accommodationById(
-      !!!(token === 'null') ? jwt.verify(token, process.env.SECRET_KEY).id : '',
+      req.userId,
       req.params.id,
       {
         start_date: req.query.start_date,
@@ -91,5 +85,23 @@ export async function payment(req, res) {
     res.status(201).json({ message: '예약이 완료되었습니다.' });
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
+  }
+}
+
+export async function wishList(req, res) {
+  try {
+    const page = req.query.page ? req.query.page : 1; // 받아오고 싶은 페이지
+    const getImageAll = req.query.getImageAll; // 객체 전체사진 조회 여부
+    const count = req.query.count;
+    const userId = req.userId; // 유저 고유 키
+    const resData = await roomService.getWishList({
+      page,
+      count,
+      userId,
+      getImageAll,
+    });
+    return res.status(200).json(resData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 }
