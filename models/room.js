@@ -52,9 +52,7 @@ ${generateOrderByStatemnet(sortKeyword)}
 }
 
 function generateOrderByStatemnet(orderkeyword) {
-  return orderkeyword
-    ? ` ORDER BY rooms.id,${orderkeyword}`
-    : ' ORDER BY rooms.id';
+  return orderkeyword ? ` ORDER BY ${orderkeyword}` : ' ORDER BY rooms.id';
 }
 
 function generateHavingStatement({
